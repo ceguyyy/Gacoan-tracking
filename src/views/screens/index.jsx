@@ -1,6 +1,8 @@
 import React from 'react';
-import { token, s } from '../styles/theme';
+import { token } from '../styles/theme';
+import { useTheme } from '../styles/ThemeContext';
 import { Spinner, ChecklistItem } from '../components/SharedComponents';
+import { Text, Flex, Banner, Toggle } from '../components/Pixel';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const CalendarIcon = ({ size = 16, color = 'currentColor' }) => (
@@ -26,8 +28,8 @@ const CheckCircle = ({ size = 20, color = 'currentColor' }) => (
   </svg>
 );
 
-const ChevronRight = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={token.colorNeutral400} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const ChevronRight = ({ color }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 18 15 12 9 6" />
   </svg>
 );
@@ -39,12 +41,13 @@ const UserIcon = ({ size = 32, color = token.colorBrand }) => (
   </svg>
 );
 
-// ─── Mekari Pixel top-level brand bar ─────────────────────────────────────────
+// ─── Mekari Pixel brand bar ────────────────────────────────────────────────────
 function MekariBrandBar() {
+  const { t } = useTheme();
   return (
     <div style={{
       height: '3px',
-      background: `linear-gradient(90deg, ${token.colorBrand} 0%, ${token.colorBrandMid} 100%)`,
+      background: `linear-gradient(90deg, ${t.colorBrand} 0%, ${t.colorBrandMid} 100%)`,
     }} />
   );
 }
@@ -52,24 +55,25 @@ function MekariBrandBar() {
 // ─── Screens ──────────────────────────────────────────────────────────────────
 
 export function ScreenLogin({ users, onLogin }) {
+  const { t, s } = useTheme();
   return (
     <div>
       <MekariBrandBar />
-      <div style={{ padding: `${token.spacing6} ${token.spacing5} ${token.spacing4}`, textAlign: 'center' }}>
+      <div style={{ padding: `${t.spacing6} ${t.spacing5} ${t.spacing4}`, textAlign: 'center' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: '56px', height: '56px', borderRadius: token.radiusFull,
-          backgroundColor: token.colorBrandLight, marginBottom: token.spacing3,
+          width: '56px', height: '56px', borderRadius: t.radiusFull,
+          backgroundColor: t.colorBrandLight, marginBottom: t.spacing3,
         }}>
-          <UserIcon size={28} />
+          <UserIcon size={28} color={t.colorBrand} />
         </div>
-        <h1 style={{ ...s.cardTitle, fontSize: token.fontSizeLg, marginBottom: token.spacing1 }}>Masuk ke Akun</h1>
+        <h1 style={{ ...s.cardTitle, fontSize: t.fontSizeLg, marginBottom: t.spacing1 }}>Masuk ke Akun</h1>
         <p style={s.cardSubtitle}>Pilih nama Anda untuk melanjutkan</p>
       </div>
 
       <div style={s.card}>
         {users.length === 0 ? (
-          <div style={{ padding: token.spacing8, textAlign: 'center', color: token.colorNeutral800 }}>
+          <div style={{ padding: t.spacing8, textAlign: 'center', color: t.colorNeutral800 }}>
             Tidak ada data user.
           </div>
         ) : (
@@ -80,33 +84,34 @@ export function ScreenLogin({ users, onLogin }) {
               role="button"
               tabIndex={0}
               style={{
-                padding: `${token.spacing3} ${token.spacing5}`,
-                borderBottom: idx === users.length - 1 ? 'none' : `1px solid ${token.colorNeutral200}`,
+                padding: `${t.spacing3} ${t.spacing5}`,
+                borderBottom: idx === users.length - 1 ? 'none' : `1px solid ${t.colorNeutral200}`,
                 cursor: 'pointer',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 transition: 'background-color 0.1s',
+                backgroundColor: 'transparent',
               }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor = token.colorNeutral100}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = t.colorNeutral100}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing3 }}>
                 <div style={{
-                  width: '36px', height: '36px', borderRadius: token.radiusFull,
-                  backgroundColor: token.colorBrandLight,
+                  width: '36px', height: '36px', borderRadius: t.radiusFull,
+                  backgroundColor: t.colorBrandLight,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: token.fontSizeMd, fontWeight: token.fontWeightSemibold, color: token.colorBrand,
+                  fontSize: t.fontSizeMd, fontWeight: t.fontWeightSemibold, color: t.colorBrand,
                   flexShrink: 0,
                 }}>
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontWeight: token.fontWeightSemibold, color: token.colorNeutral1000, fontSize: token.fontSizeBase }}>{user.name}</div>
-                  <div style={{ fontSize: token.fontSizeSm, color: token.colorNeutral800 }}>{user.email || user.id}</div>
+                  <div style={{ fontWeight: t.fontWeightSemibold, color: t.colorNeutral1000, fontSize: t.fontSizeBase }}>{user.name}</div>
+                  <div style={{ fontSize: t.fontSizeSm, color: t.colorNeutral800 }}>{user.email || user.id}</div>
                 </div>
               </div>
-              <ChevronRight />
+              <ChevronRight color={t.colorNeutral400} />
             </div>
           ))
         )}
@@ -116,22 +121,18 @@ export function ScreenLogin({ users, onLogin }) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-// Normalize API status string → internal key
 function normalizeStatus(statusStr) {
   if (!statusStr) return null;
-  const s = statusStr.toLowerCase().replace(/\s+/g, '_');
-  if (s === 'in_progress') return 'in_progress';
-  if (s === 'done' || s === 'completed') return 'done';
-  if (s === 'overdue' || s === 'late') return 'overdue';
-  if (s === 'upcoming' || s === 'pending') return 'upcoming';
-  return s; // fallback: use as-is
+  const raw = statusStr.toLowerCase().replace(/\s+/g, '_');
+  if (raw === 'in_progress') return 'in_progress';
+  if (raw === 'done' || raw === 'completed') return 'done';
+  if (raw === 'overdue' || raw === 'late') return 'overdue';
+  if (raw === 'upcoming' || raw === 'pending') return 'upcoming';
+  return raw;
 }
 
 function getTaskStatus(task) {
-  // Prefer the status field from API
   if (task.status) return normalizeStatus(task.status);
-
-  // Fallback: derive from due_date
   if (!task.due_date) return 'in_progress';
   const now = Date.now();
   const endOfToday = new Date();
@@ -157,35 +158,34 @@ const FILTERS = [
 ];
 
 export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
+  const { t, s } = useTheme();
   const [activeFilter, setActiveFilter] = React.useState('all');
 
-  // Hitung jumlah per status
   const counts = React.useMemo(() => {
     const c = { all: tasks.length, in_progress: 0, upcoming: 0, overdue: 0 };
-    tasks.forEach(t => { c[getTaskStatus(t)]++; });
+    tasks.forEach(tk => { c[getTaskStatus(tk)]++; });
     return c;
   }, [tasks]);
 
-  // Filter tasks berdasarkan tab aktif
   const filteredTasks = activeFilter === 'all'
     ? tasks
-    : tasks.filter(t => getTaskStatus(t) === activeFilter);
+    : tasks.filter(tk => getTaskStatus(tk) === activeFilter);
 
   if (tasks.length === 0) {
     return (
-      <div style={{ ...s.card, padding: `${token.spacing10} ${token.spacing6}`, textAlign: 'center' }}>
+      <div style={{ ...s.card, padding: `${t.spacing10} ${t.spacing6}`, textAlign: 'center' }}>
         <div style={{
-          width: '56px', height: '56px', borderRadius: token.radiusFull,
-          backgroundColor: token.colorNeutral200,
+          width: '56px', height: '56px', borderRadius: t.radiusFull,
+          backgroundColor: t.colorNeutral200,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: `0 auto ${token.spacing4}`,
+          margin: `0 auto ${t.spacing4}`,
         }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={token.colorNeutral800} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={t.colorNeutral800} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 11 12 14 22 4" />
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
           </svg>
         </div>
-        <h3 style={{ ...s.cardTitle, marginBottom: token.spacing2 }}>Tidak Ada Tugas</h3>
+        <h3 style={{ ...s.cardTitle, marginBottom: t.spacing2 }}>Tidak Ada Tugas</h3>
         <p style={{ ...s.cardSubtitle, maxWidth: '240px', margin: '0 auto' }}>
           Belum ada tugas yang di-assign kepada <strong>{currentUser?.name?.split(' ')[0]}</strong>.
         </p>
@@ -196,9 +196,9 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
   return (
     <>
       {/* Header */}
-      <div style={{ marginBottom: token.spacing4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ marginBottom: t.spacing4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ fontSize: token.fontSizeLg, fontWeight: token.fontWeightSemibold, margin: `0 0 ${token.spacing1}`, color: token.colorNeutral1000 }}>
+          <h2 style={{ fontSize: t.fontSizeLg, fontWeight: t.fontWeightSemibold, margin: `0 0 ${t.spacing1}`, color: t.colorNeutral1000 }}>
             Tugas Saya
           </h2>
           <p style={s.helperText}>{tasks.length} tugas di-assign kepada Anda.</p>
@@ -207,11 +207,7 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
       </div>
 
       {/* Filter Tabs */}
-      <div style={{
-        display: 'flex', gap: token.spacing2,
-        marginBottom: token.spacing4,
-        overflowX: 'auto', paddingBottom: '2px',
-      }}>
+      <div style={{ display: 'flex', gap: t.spacing2, marginBottom: t.spacing4, overflowX: 'auto', paddingBottom: '2px' }}>
         {FILTERS.map(({ id, label }) => {
           const active = activeFilter === id;
           const count = counts[id] ?? 0;
@@ -221,16 +217,16 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
               onClick={() => setActiveFilter(id)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '5px',
-                padding: `6px ${token.spacing3}`,
-                borderRadius: token.radiusFull,
-                border: `1px solid ${active ? token.colorBrand : token.colorNeutral300}`,
-                backgroundColor: active ? token.colorBrand : token.colorWhite,
-                color: active ? '#fff' : token.colorNeutral900,
-                fontSize: token.fontSizeSm,
-                fontWeight: active ? token.fontWeightSemibold : token.fontWeightMedium,
+                padding: `6px ${t.spacing3}`,
+                borderRadius: t.radiusFull,
+                border: `1px solid ${active ? t.colorBrand : t.colorNeutral300}`,
+                backgroundColor: active ? t.colorBrand : t.colorWhite,
+                color: active ? '#fff' : t.colorNeutral900,
+                fontSize: t.fontSizeSm,
+                fontWeight: active ? t.fontWeightSemibold : t.fontWeightMedium,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
-                fontFamily: token.fontFamily,
+                fontFamily: t.fontFamily,
                 transition: 'all 0.15s ease',
                 flexShrink: 0,
               }}
@@ -238,12 +234,12 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
               {label}
               {count > 0 && (
                 <span style={{
-                  backgroundColor: active ? 'rgba(255,255,255,0.25)' : token.colorNeutral200,
-                  color: active ? '#fff' : token.colorNeutral800,
-                  borderRadius: token.radiusFull,
+                  backgroundColor: active ? 'rgba(255,255,255,0.25)' : t.colorNeutral200,
+                  color: active ? '#fff' : t.colorNeutral800,
+                  borderRadius: t.radiusFull,
                   padding: '1px 6px',
-                  fontSize: token.fontSizeXs,
-                  fontWeight: token.fontWeightBold,
+                  fontSize: t.fontSizeXs,
+                  fontWeight: t.fontWeightBold,
                   lineHeight: '16px',
                 }}>
                   {count}
@@ -256,8 +252,8 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
 
       {/* Empty filtered state */}
       {filteredTasks.length === 0 && (
-        <div style={{ ...s.card, padding: `${token.spacing8} ${token.spacing6}`, textAlign: 'center' }}>
-          <p style={{ color: token.colorNeutral800, fontSize: token.fontSizeBase }}>
+        <div style={{ ...s.card, padding: `${t.spacing8} ${t.spacing6}`, textAlign: 'center' }}>
+          <p style={{ color: t.colorNeutral800, fontSize: t.fontSizeBase }}>
             Tidak ada tugas dengan status <strong>{FILTERS.find(f => f.id === activeFilter)?.label}</strong>.
           </p>
         </div>
@@ -270,29 +266,27 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
         return (
           <div key={task.id} style={s.card}>
             <div style={s.cardBody}>
-              {/* Title row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: token.spacing3 }}>
-                <h3 style={{ ...s.cardTitle, flex: 1, paddingRight: token.spacing3 }}>{task.description}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: t.spacing3 }}>
+                <h3 style={{ ...s.cardTitle, flex: 1, paddingRight: t.spacing3 }}>{task.description}</h3>
                 <div style={s.badge(statusCfg.badgeType)}>{statusCfg.label}</div>
               </div>
 
-              {/* Meta */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: token.spacing2, marginBottom: token.spacing4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, color: token.colorNeutral800, fontSize: token.fontSizeSm }}>
-                  <LocationIcon color={token.colorNeutral800} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: t.spacing2, marginBottom: t.spacing4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, color: t.colorNeutral800, fontSize: t.fontSizeSm }}>
+                  <LocationIcon color={t.colorNeutral800} />
                   <span>{task.location?.name}</span>
                 </div>
                 {task.due_date && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, fontSize: token.fontSizeSm, color: status === 'overdue' ? token.colorDanger : token.colorNeutral800 }}>
-                    <CalendarIcon color={status === 'overdue' ? token.colorDanger : token.colorNeutral800} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, fontSize: t.fontSizeSm, color: status === 'overdue' ? t.colorDanger : t.colorNeutral800 }}>
+                    <CalendarIcon color={status === 'overdue' ? t.colorDanger : t.colorNeutral800} />
                     <span>
                       Tenggat: {new Date(task.due_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      {status === 'overdue' && <span style={{ fontWeight: token.fontWeightSemibold }}> — Terlambat!</span>}
+                      {status === 'overdue' && <span style={{ fontWeight: t.fontWeightSemibold }}> — Terlambat!</span>}
                     </span>
                   </div>
                 )}
                 {task.task && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, color: token.colorNeutral800, fontSize: token.fontSizeSm }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, color: t.colorNeutral800, fontSize: t.fontSizeSm }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                     </svg>
@@ -303,8 +297,8 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
 
               <hr style={s.divider} />
 
-              <button 
-                style={{ ...s.btnPrimary, ...(status === 'done' ? s.btnDisabled : {}) }} 
+              <button
+                style={{ ...s.btnPrimary, ...(status === 'done' ? s.btnDisabled : {}) }}
                 onClick={() => status !== 'done' && onSelectTask(task)}
                 disabled={status === 'done'}
               >
@@ -333,6 +327,7 @@ export function ScreenValidation({
   submitLoading,
   faceRecognitionEnabled = true
 }) {
+  const { t, s } = useTheme();
   const isLocValid = locationStatus === 'valid';
   const isFaceValid = faceRecognitionEnabled ? faceStatus === 'valid' : true;
   const allValid = isLocValid && isFaceValid;
@@ -340,16 +335,16 @@ export function ScreenValidation({
   const fileInputRef = React.useRef(null);
 
   const locAlertConfig = {
-    checking: { type: 'info', title: 'Mengecek Lokasi', icon: <Spinner size={16} color={token.colorBrand} /> },
-    valid: { type: 'success', title: 'Lokasi Valid', icon: <CheckCircle size={16} color={token.colorSuccess} /> },
-    invalid: { type: 'error', title: 'Lokasi Tidak Valid', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={token.colorDanger} strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg> },
-    geo_error: { type: 'error', title: 'Error GPS', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={token.colorDanger} strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg> },
+    checking: { type: 'info', title: 'Mengecek Lokasi', icon: <Spinner size={16} color={t.colorBrand} /> },
+    valid: { type: 'success', title: 'Lokasi Valid', icon: <CheckCircle size={16} color={t.colorSuccess} /> },
+    invalid: { type: 'error', title: 'Lokasi Tidak Valid', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.colorDanger} strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg> },
+    geo_error: { type: 'error', title: 'Error GPS', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.colorDanger} strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg> },
   }[locationStatus] || { type: 'info', title: 'Menunggu...', icon: null };
 
   const faceAlertConfig = {
-    checking: { type: 'info', title: 'Memeriksa Wajah', icon: <Spinner size={16} color={token.colorBrand} /> },
-    valid: { type: 'success', title: 'Wajah Cocok', icon: <CheckCircle size={16} color={token.colorSuccess} /> },
-    invalid: { type: 'error', title: 'Wajah Tidak Cocok', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={token.colorDanger} strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg> },
+    checking: { type: 'info', title: 'Memeriksa Wajah', icon: <Spinner size={16} color={t.colorBrand} /> },
+    valid: { type: 'success', title: 'Wajah Cocok', icon: <CheckCircle size={16} color={t.colorSuccess} /> },
+    invalid: { type: 'error', title: 'Wajah Tidak Cocok', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.colorDanger} strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg> },
   }[faceStatus] || { type: 'info', title: 'Ambil foto untuk validasi', icon: null };
 
   return (
@@ -362,13 +357,13 @@ export function ScreenValidation({
       <div style={s.cardBody}>
 
         {/* Step 1: Location */}
-        <div style={{ marginBottom: token.spacing5 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, marginBottom: token.spacing2 }}>
+        <div style={{ marginBottom: t.spacing5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, marginBottom: t.spacing2 }}>
             <div style={{
-              width: '20px', height: '20px', borderRadius: token.radiusFull,
-              backgroundColor: isLocValid ? token.colorSuccess : token.colorBrand,
+              width: '20px', height: '20px', borderRadius: t.radiusFull,
+              backgroundColor: isLocValid ? t.colorSuccess : t.colorBrand,
               color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '11px', fontWeight: token.fontWeightBold, flexShrink: 0,
+              fontSize: '11px', fontWeight: t.fontWeightBold, flexShrink: 0,
             }}>1</div>
             <span style={{ ...s.label, margin: 0 }}>Validasi Lokasi (GPS)</span>
           </div>
@@ -376,7 +371,7 @@ export function ScreenValidation({
             <div style={s.alert(locAlertConfig.type)}>
               {locAlertConfig.icon}
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: token.fontWeightSemibold }}>{locAlertConfig.title}</div>
+                <div style={{ fontWeight: t.fontWeightSemibold }}>{locAlertConfig.title}</div>
                 <div style={{ marginTop: '2px', opacity: 0.85 }}>{locationMessage}</div>
               </div>
             </div>
@@ -384,14 +379,7 @@ export function ScreenValidation({
           {locationStatus === 'geo_error' && onRetryLocation && (
             <button
               onClick={onRetryLocation}
-              style={{
-                ...s.btnSecondary,
-                marginTop: token.spacing2,
-                padding: `8px ${token.spacing4}`,
-                width: 'auto',
-                fontSize: token.fontSizeSm,
-                gap: token.spacing2,
-              }}
+              style={{ ...s.btnSecondary, marginTop: t.spacing2, padding: `8px ${t.spacing4}`, width: 'auto', fontSize: t.fontSizeSm, gap: t.spacing2 }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="1 4 1 10 7 10" />
@@ -404,27 +392,27 @@ export function ScreenValidation({
 
         {/* Step 2: Face */}
         {faceRecognitionEnabled && (
-          <div style={{ marginBottom: token.spacing6 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, marginBottom: token.spacing2 }}>
+          <div style={{ marginBottom: t.spacing6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, marginBottom: t.spacing2 }}>
               <div style={{
-                width: '20px', height: '20px', borderRadius: token.radiusFull,
-                backgroundColor: isFaceValid ? token.colorSuccess : isLocValid ? token.colorBrand : token.colorNeutral300,
+                width: '20px', height: '20px', borderRadius: t.radiusFull,
+                backgroundColor: isFaceValid ? t.colorSuccess : isLocValid ? t.colorBrand : t.colorNeutral300,
                 color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '11px', fontWeight: token.fontWeightBold, flexShrink: 0,
+                fontSize: '11px', fontWeight: t.fontWeightBold, flexShrink: 0,
               }}>2</div>
               <span style={{ ...s.label, margin: 0 }}>Validasi Wajah</span>
             </div>
             {capturedFace ? (
-              <div style={{ display: 'flex', gap: token.spacing3, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: t.spacing3, alignItems: 'center' }}>
                 <img src={capturedFace} alt="Selfie"
-                  style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: token.radiusMd, border: `1px solid ${token.colorNeutral300}`, flexShrink: 0 }}
+                  style={{ width: '72px', height: '72px', objectFit: 'cover', borderRadius: t.radiusMd, border: `1px solid ${t.colorNeutral300}`, flexShrink: 0 }}
                 />
                 <div style={{ flex: 1 }}>
                   {faceStatus && (
                     <div style={s.alert(faceAlertConfig.type)}>
                       {faceAlertConfig.icon}
                       <div>
-                        <div style={{ fontWeight: token.fontWeightSemibold }}>{faceAlertConfig.title}</div>
+                        <div style={{ fontWeight: t.fontWeightSemibold }}>{faceAlertConfig.title}</div>
                         <div style={{ marginTop: '2px', opacity: 0.85 }}>{faceMessage}</div>
                       </div>
                     </div>
@@ -440,7 +428,7 @@ export function ScreenValidation({
                   </svg>
                   Ambil Foto Selfie
                 </button>
-                {!isLocValid && <p style={{ ...s.helperText, marginTop: token.spacing2 }}>Selesaikan validasi lokasi terlebih dahulu.</p>}
+                {!isLocValid && <p style={{ ...s.helperText, marginTop: t.spacing2 }}>Selesaikan validasi lokasi terlebih dahulu.</p>}
                 <input
                   type="file" accept="image/*" capture="user" ref={fileInputRef} style={{ display: 'none' }}
                   onChange={(e) => {
@@ -453,7 +441,7 @@ export function ScreenValidation({
         )}
 
         {/* CTA */}
-        <div style={{ marginTop: token.spacing4 }}>
+        <div style={{ marginTop: t.spacing4 }}>
           {validationType === 'initial' ? (
             <button
               style={{ ...s.btnPrimary, ...(!allValid ? s.btnDisabled : {}) }}
@@ -478,6 +466,7 @@ export function ScreenValidation({
 }
 
 export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onSubmitIntent, taskPhotos, uploadingPhoto, onPhotoUpload }) {
+  const { t, s } = useTheme();
   const totalItems = task?.task?.length ?? 0;
   const checkedCount = Object.values(checklist).filter(Boolean).length;
   const progressPct = totalItems ? Math.round((checkedCount / totalItems) * 100) : 0;
@@ -487,29 +476,26 @@ export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onS
       {/* Task Header Card */}
       <div style={s.card}>
         <div style={s.cardBody}>
-          <h2 style={{ ...s.cardTitle, marginBottom: token.spacing2 }}>{task?.description}</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, color: token.colorNeutral800, fontSize: token.fontSizeSm }}>
-            <LocationIcon color={token.colorNeutral800} />
+          <h2 style={{ ...s.cardTitle, marginBottom: t.spacing2 }}>{task?.description}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, color: t.colorNeutral800, fontSize: t.fontSizeSm }}>
+            <LocationIcon color={t.colorNeutral800} />
             <span>{task?.location?.name}</span>
           </div>
 
           {/* Progress bar */}
-          <div style={{ marginTop: token.spacing4 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: token.spacing2 }}>
-              <span style={{ fontSize: token.fontSizeSm, color: token.colorNeutral800, fontWeight: token.fontWeightMedium }}>Progress</span>
-              <span style={{
-                fontSize: token.fontSizeSm, fontWeight: token.fontWeightSemibold,
-                color: allChecked ? token.colorSuccess : token.colorBrand,
-              }}>
+          <div style={{ marginTop: t.spacing4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: t.spacing2 }}>
+              <span style={{ fontSize: t.fontSizeSm, color: t.colorNeutral800, fontWeight: t.fontWeightMedium }}>Progress</span>
+              <span style={{ fontSize: t.fontSizeSm, fontWeight: t.fontWeightSemibold, color: allChecked ? t.colorSuccess : t.colorBrand }}>
                 {checkedCount}/{totalItems}
               </span>
             </div>
-            <div style={{ height: '6px', backgroundColor: token.colorNeutral200, borderRadius: token.radiusFull, overflow: 'hidden' }}>
+            <div style={{ height: '6px', backgroundColor: t.colorNeutral200, borderRadius: t.radiusFull, overflow: 'hidden' }}>
               <div style={{
                 height: '100%',
                 width: `${progressPct}%`,
-                backgroundColor: allChecked ? token.colorSuccess : token.colorBrand,
-                borderRadius: token.radiusFull,
+                backgroundColor: allChecked ? t.colorSuccess : t.colorBrand,
+                borderRadius: t.radiusFull,
                 transition: 'width 0.3s ease',
               }} />
             </div>
@@ -543,7 +529,7 @@ export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onS
       {/* Submit CTA */}
       <div>
         {!allChecked && (
-          <p style={{ ...s.helperText, textAlign: 'center', marginBottom: token.spacing3 }}>
+          <p style={{ ...s.helperText, textAlign: 'center', marginBottom: t.spacing3 }}>
             Selesaikan semua {totalItems} item untuk melanjutkan.
           </p>
         )}
@@ -551,17 +537,16 @@ export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onS
           style={{
             ...s.btnPrimary,
             ...(!allChecked ? s.btnDisabled : {}),
-            backgroundColor: allChecked ? token.colorSuccess : token.colorBrand,
-            borderColor: allChecked ? token.colorSuccess : token.colorBrand,
+            backgroundColor: allChecked ? t.colorSuccess : t.colorBrand,
+            borderColor: allChecked ? t.colorSuccess : t.colorBrand,
           }}
           disabled={!allChecked}
           onClick={onSubmitIntent}
         >
-          {allChecked ? (
-            <><CheckCircle size={16} color="#fff" /> Lanjut Validasi Akhir</>
-          ) : (
-            'Lanjut Validasi Akhir'
-          )}
+          {allChecked
+            ? <><CheckCircle size={16} color="#fff" /> Lanjut Validasi Akhir</>
+            : 'Lanjut Validasi Akhir'
+          }
         </button>
       </div>
     </>
@@ -569,19 +554,20 @@ export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onS
 }
 
 export function ScreenCompleted({ onReset }) {
+  const { t, s } = useTheme();
   return (
-    <div style={{ ...s.card, textAlign: 'center', padding: `${token.spacing10} ${token.spacing6}` }}>
+    <div style={{ ...s.card, textAlign: 'center', padding: `${t.spacing10} ${t.spacing6}` }}>
       <div style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        width: '64px', height: '64px', borderRadius: token.radiusFull,
-        backgroundColor: token.colorSuccessLight, color: token.colorSuccess, marginBottom: token.spacing4,
+        width: '64px', height: '64px', borderRadius: t.radiusFull,
+        backgroundColor: t.colorSuccessLight, color: t.colorSuccess, marginBottom: t.spacing4,
       }}>
-        <CheckCircle size={32} color={token.colorSuccess} />
+        <CheckCircle size={32} color={t.colorSuccess} />
       </div>
-      <h2 style={{ margin: `0 0 ${token.spacing2}`, fontSize: token.fontSizeXl, fontWeight: token.fontWeightBold, color: token.colorNeutral1000 }}>
+      <h2 style={{ margin: `0 0 ${t.spacing2}`, fontSize: t.fontSizeXl, fontWeight: t.fontWeightBold, color: t.colorNeutral1000 }}>
         Aktivitas Selesai!
       </h2>
-      <p style={{ margin: `0 0 ${token.spacing6}`, color: token.colorNeutral800, fontSize: token.fontSizeBase, lineHeight: token.lineHeightBase }}>
+      <p style={{ margin: `0 0 ${t.spacing6}`, color: t.colorNeutral800, fontSize: t.fontSizeBase, lineHeight: t.lineHeightBase }}>
         Laporan aktivitas tugas Anda telah berhasil dikirim ke server.
       </p>
       <button style={s.btnPrimary} onClick={onReset}>
@@ -592,69 +578,49 @@ export function ScreenCompleted({ onReset }) {
 }
 
 export function ScreenSettings({ faceRecognitionEnabled, onToggleFaceRecognition }) {
+  const { t, s } = useTheme();
+  const InfoIcon = (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginTop: 2 }}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  );
+
   return (
     <div style={s.card}>
-      <div style={s.cardHeader}>
-        <h2 style={s.cardTitle}>Pengaturan Aplikasi</h2>
-        <p style={s.cardSubtitle}>Kelola preferensi validasi dan sistem.</p>
-      </div>
-      <div>
-        {/* Face Recognition Toggle */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: `${token.spacing4} ${token.spacing5}`,
-          borderBottom: `1px solid ${token.colorNeutral200}`,
-        }}>
-          <div>
-            <div style={{ fontWeight: token.fontWeightSemibold, color: token.colorNeutral1000, fontSize: token.fontSizeBase }}>
-              Validasi Wajah
-            </div>
-            <div style={{ fontSize: token.fontSizeSm, color: token.colorNeutral800, marginTop: '2px' }}>
-              Aktifkan pengecekan wajah saat presensi
-            </div>
-          </div>
-          {/* Toggle switch */}
-          <div
-            role="switch"
-            aria-checked={faceRecognitionEnabled}
-            onClick={onToggleFaceRecognition}
-            style={{
-              width: '44px', height: '24px', borderRadius: token.radiusFull,
-              backgroundColor: faceRecognitionEnabled ? token.colorBrand : token.colorNeutral300,
-              position: 'relative', cursor: 'pointer', flexShrink: 0,
-              transition: 'background-color 0.2s ease', marginLeft: token.spacing3,
-            }}
-          >
-            <div style={{
-              width: '18px', height: '18px', borderRadius: '50%',
-              backgroundColor: token.colorWhite,
-              position: 'absolute', top: '3px',
-              left: faceRecognitionEnabled ? '23px' : '3px',
-              transition: 'left 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-            }} />
-          </div>
-        </div>
+      <Flex direction="column" gap="3xs" padding="lg" style={{ borderBottom: `1px solid ${t.border.subtle}` }}>
+        <Text as="h2" size="h3">Pengaturan Aplikasi</Text>
+        <Text size="body-small" color="secondary">Kelola preferensi validasi dan sistem.</Text>
+      </Flex>
 
-        {/* Status indicator */}
-        <div style={{ padding: `${token.spacing3} ${token.spacing5}` }}>
-          <div style={s.alert(faceRecognitionEnabled ? 'brand' : 'warning')}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <span>
-              {faceRecognitionEnabled
-                ? 'Validasi wajah aktif — selfie diperlukan saat mulai dan selesai tugas.'
-                : 'Validasi wajah nonaktif — hanya validasi GPS yang akan dilakukan.'}
-            </span>
-          </div>
-        </div>
-      </div>
+      <Flex align="center" justify="space-between" paddingX="lg" paddingY="md"
+        style={{ borderBottom: `1px solid ${t.border.subtle}` }}>
+        <Flex direction="column" gap="4xs">
+          <Text size="label">Validasi Wajah</Text>
+          <Text size="body-small" color="secondary">Aktifkan pengecekan wajah saat presensi</Text>
+        </Flex>
+        <Toggle
+          checked={faceRecognitionEnabled}
+          onChange={onToggleFaceRecognition}
+          ariaLabel="Validasi Wajah"
+        />
+      </Flex>
+
+      <Flex paddingX="lg" paddingY="sm">
+        <Banner type={faceRecognitionEnabled ? 'info' : 'warning'} icon={InfoIcon}>
+          {faceRecognitionEnabled
+            ? 'Validasi wajah aktif — selfie diperlukan saat mulai dan selesai tugas.'
+            : 'Validasi wajah nonaktif — hanya validasi GPS yang akan dilakukan.'}
+        </Banner>
+      </Flex>
     </div>
   );
 }
 
 export function ScreenProfile({ currentUser }) {
+  const { t, s } = useTheme();
   const fields = [
     { label: 'Nama Lengkap', value: currentUser?.name },
     { label: 'Email', value: currentUser?.email },
@@ -665,17 +631,17 @@ export function ScreenProfile({ currentUser }) {
   return (
     <div>
       {/* Avatar card */}
-      <div style={{ ...s.card, textAlign: 'center', padding: `${token.spacing8} ${token.spacing6}` }}>
+      <div style={{ ...s.card, textAlign: 'center', padding: `${t.spacing8} ${t.spacing6}` }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          width: '72px', height: '72px', borderRadius: token.radiusFull,
-          background: `linear-gradient(135deg, ${token.colorBrand} 0%, ${token.colorBrandMid} 100%)`,
-          color: '#fff', fontSize: token.fontSizeXxl, fontWeight: token.fontWeightBold,
-          marginBottom: token.spacing4,
+          width: '72px', height: '72px', borderRadius: t.radiusFull,
+          background: `linear-gradient(135deg, ${t.colorBrand} 0%, ${t.colorBrandMid} 100%)`,
+          color: '#fff', fontSize: t.fontSizeXxl, fontWeight: t.fontWeightBold,
+          marginBottom: t.spacing4,
         }}>
           {currentUser?.name?.charAt(0).toUpperCase()}
         </div>
-        <h2 style={{ margin: `0 0 ${token.spacing1}`, fontSize: token.fontSizeLg, fontWeight: token.fontWeightBold, color: token.colorNeutral1000 }}>
+        <h2 style={{ margin: `0 0 ${t.spacing1}`, fontSize: t.fontSizeLg, fontWeight: t.fontWeightBold, color: t.colorNeutral1000 }}>
           {currentUser?.name}
         </h2>
         <div style={{ ...s.badge('brand'), display: 'inline-flex' }}>Karyawan Aktif</div>
@@ -690,11 +656,11 @@ export function ScreenProfile({ currentUser }) {
           {fields.map(({ label, value }, idx) => (
             <div key={label} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: `${token.spacing3} ${token.spacing5}`,
-              borderBottom: idx < fields.length - 1 ? `1px solid ${token.colorNeutral200}` : 'none',
+              padding: `${t.spacing3} ${t.spacing5}`,
+              borderBottom: idx < fields.length - 1 ? `1px solid ${t.colorNeutral200}` : 'none',
             }}>
-              <span style={{ fontSize: token.fontSizeSm, color: token.colorNeutral800 }}>{label}</span>
-              <span style={{ fontSize: token.fontSizeBase, fontWeight: token.fontWeightMedium, color: token.colorNeutral1000 }}>
+              <span style={{ fontSize: t.fontSizeSm, color: t.colorNeutral800 }}>{label}</span>
+              <span style={{ fontSize: t.fontSizeBase, fontWeight: t.fontWeightMedium, color: t.colorNeutral1000 }}>
                 {value || '—'}
               </span>
             </div>
@@ -704,4 +670,3 @@ export function ScreenProfile({ currentUser }) {
     </div>
   );
 }
-

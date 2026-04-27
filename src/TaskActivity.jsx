@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { token, s } from './views/styles/theme';
+import { useTheme } from './views/styles/ThemeContext';
 import { useAuthController } from './controllers/useAuthController';
 import { useTaskController } from './controllers/useTaskController';
 import { useValidationController } from './controllers/useValidationController';
@@ -19,18 +19,15 @@ import {
 // ─── Screen/Route constants ───────────────────────────────────────────────────
 const SCREEN = {
   LOGIN: 'LOGIN',
-  // Dashboard screens (inside sidebar layout)
   TASK_SELECT: 'TASK_SELECT',
   SETTINGS: 'SETTINGS',
   PROFILE: 'PROFILE',
-  // Task flow (inside dashboard but with back navigation)
   VALIDATION_INITIAL: 'VALIDATION_INITIAL',
   TASK_EXECUTION: 'TASK_EXECUTION',
   VALIDATION_FINAL: 'VALIDATION_FINAL',
   COMPLETED: 'COMPLETED',
 };
 
-// Map sidebar nav IDs to screens
 const NAV_SCREEN_MAP = {
   tasks: SCREEN.TASK_SELECT,
   settings: SCREEN.SETTINGS,
@@ -58,6 +55,7 @@ const PAGE_TITLES = {
 };
 
 export default function TaskActivity() {
+  const { t, s, isDark, toggleTheme } = useTheme();
   const [screen, setScreen] = useState(SCREEN.LOGIN);
   const [validationType, setValidationType] = useState('initial');
 
@@ -132,22 +130,42 @@ export default function TaskActivity() {
     return (
       <div style={{
         ...s.appWrapper, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', flexDirection: 'column', gap: token.spacing4,
+        justifyContent: 'center', flexDirection: 'column', gap: t.spacing4,
       }}>
         <Spinner size={36} />
-        <p style={{ color: token.colorNeutral800, fontSize: token.fontSizeMd }}>
+        <p style={{ color: t.colorNeutral800, fontSize: t.fontSizeMd }}>
           Memuat data aplikasi...
         </p>
       </div>
     );
   }
 
-  // ── Login Screen (full page, no sidebar) ──────────────────────────────────
+  // ── Login Screen ──────────────────────────────────────────────────────────
   if (screen === SCREEN.LOGIN) {
     return (
-      <div style={{ ...s.appWrapper, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: token.spacing4 }}>
+      <div style={{ ...s.appWrapper, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: t.spacing4, position: 'relative' }}>
+        {/* Theme toggle on login page */}
+        <button
+          onClick={toggleTheme}
+          title={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+          style={{
+            position: 'absolute', top: t.spacing4, right: t.spacing4,
+            width: '34px', height: '34px',
+            borderRadius: t.radiusFull,
+            border: `1px solid ${t.colorNeutral300}`,
+            backgroundColor: t.colorNeutral100,
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: t.colorNeutral800,
+          }}
+        >
+          {isDark
+            ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+          }
+        </button>
         <div style={{ width: '100%', maxWidth: '400px' }}>
-          {authController.error && <div style={{ ...s.alert('error'), marginBottom: token.spacing4 }}>{authController.error}</div>}
+          {authController.error && <div style={{ ...s.alert('error'), marginBottom: t.spacing4 }}>{authController.error}</div>}
           <ScreenLogin users={authController.users} onLogin={handleLogin} />
         </div>
       </div>
@@ -167,11 +185,9 @@ export default function TaskActivity() {
       showBack={showBack}
       onBack={handleBack}
     >
-      {/* Error banners */}
       {taskController.error && <div style={s.alert('error')}>{taskController.error}</div>}
       {taskController.submitError && <div style={s.alert('error')}>{taskController.submitError}</div>}
 
-      {/* ── Screens ─────────────────────────────────────────────────────────── */}
       {screen === SCREEN.TASK_SELECT && (
         <ScreenTaskSelect
           tasks={taskController.tasks}

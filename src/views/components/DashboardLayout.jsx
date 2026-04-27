@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { token } from '../styles/theme';
+import { useTheme } from '../styles/ThemeContext';
 
 const SIDEBAR_EXPANDED = 240;
 const SIDEBAR_COLLAPSED = 64;
@@ -69,32 +69,42 @@ const IconArrowBack = () => (
   </svg>
 );
 
+const IconSun = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
+
+const IconMoon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
 const NAV_ITEMS = [
   { id: 'tasks',    label: 'Tugas',      icon: IconTasks },
   { id: 'settings', label: 'Pengaturan', icon: IconSettings },
   { id: 'profile',  label: 'Profil',     icon: IconProfile },
 ];
 
-// ─── Mekari Pixel Sidebar Colors ─────────────────────────────────────────────
-// Based on Mekari Pixel v2.4: white sidebar, indigo.700 accent
-const SB = {
-  bg: token.colorWhite,
-  border: token.colorNeutral300,
-  activeBg: token.colorBrandLight,         // indigo.100
-  activeColor: token.colorBrand,           // indigo.700
-  activeBorder: token.colorBrand,          // indigo.700
-  inactiveColor: token.colorNeutral800,
-  inactiveHoverBg: token.colorNeutral100,
-  logoutColor: token.colorDanger,
-  logoutHoverBg: token.colorDangerLight,
-  labelColor: token.colorNeutral800,
-  brandText: token.colorNeutral1000,
-  brandSubText: token.colorNeutral800,
-};
-
 // ─── Sidebar Nav Item ─────────────────────────────────────────────────────────
-function NavItem({ id, label, icon: Icon, active, collapsed, onClick }) {
+function NavItem({ id, label, icon: Icon, active, collapsed, onClick, t }) {
   const [hover, setHover] = useState(false);
+
+  const activeBg = t.colorBrandLight;
+  const activeColor = t.colorBrand;
+  const inactiveHoverBg = t.colorNeutral100;
+  const inactiveColor = t.colorNeutral800;
 
   return (
     <button
@@ -106,36 +116,33 @@ function NavItem({ id, label, icon: Icon, active, collapsed, onClick }) {
         width: '100%',
         display: 'flex',
         alignItems: 'center',
-        gap: token.spacing3,
-        padding: collapsed ? `10px 0` : `10px ${token.spacing3}`,
+        gap: t.spacing3,
+        padding: collapsed ? `10px 0` : `10px ${t.spacing3}`,
         justifyContent: collapsed ? 'center' : 'flex-start',
         marginBottom: '2px',
-        background: active
-          ? SB.activeBg
-          : hover ? SB.inactiveHoverBg : 'transparent',
+        background: active ? activeBg : hover ? inactiveHoverBg : 'transparent',
         border: 'none',
-        borderRadius: token.radiusMd,
+        borderRadius: t.radiusMd,
         cursor: 'pointer',
-        color: active ? SB.activeColor : SB.inactiveColor,
-        fontSize: token.fontSizeBase,
-        fontWeight: active ? token.fontWeightSemibold : token.fontWeightMedium,
+        color: active ? activeColor : inactiveColor,
+        fontSize: t.fontSizeBase,
+        fontWeight: active ? t.fontWeightSemibold : t.fontWeightMedium,
         textAlign: 'left',
         transition: 'background 0.12s ease, color 0.12s ease',
-        fontFamily: token.fontFamily,
+        fontFamily: t.fontFamily,
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Left active bar */}
       <div style={{
         position: 'absolute',
         left: 0, top: '4px', bottom: '4px',
         width: '3px',
-        borderRadius: token.radiusFull,
-        backgroundColor: active ? SB.activeBorder : 'transparent',
+        borderRadius: t.radiusFull,
+        backgroundColor: active ? t.colorBrand : 'transparent',
         transition: 'background 0.12s ease',
       }} />
-      <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0, marginLeft: active ? 0 : 0 }}>
+      <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
         <Icon />
       </span>
       {!collapsed && <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</span>}
@@ -144,7 +151,7 @@ function NavItem({ id, label, icon: Icon, active, collapsed, onClick }) {
 }
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
-function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onToggleCollapse, isMobile, onClose }) {
+function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onToggleCollapse, isMobile, onClose, t }) {
   const width = collapsed ? SIDEBAR_COLLAPSED : SIDEBAR_EXPANDED;
   const [logoutHover, setLogoutHover] = useState(false);
 
@@ -152,30 +159,29 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
     <div style={{
       width: `${width}px`,
       height: '100%',
-      backgroundColor: SB.bg,
-      borderRight: `1px solid ${SB.border}`,
+      backgroundColor: t.colorWhite,
+      borderRight: `1px solid ${t.colorNeutral300}`,
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
       transition: 'width 0.22s cubic-bezier(.4,0,.2,1)',
       flexShrink: 0,
     }}>
-      {/* ── Logo / Brand ──────────────────────────────────────────────────── */}
+      {/* ── Logo / Brand ────────────────────────────────────────────────── */}
       <div style={{
         height: '56px',
         display: 'flex',
         alignItems: 'center',
-        padding: collapsed ? '0' : `0 ${token.spacing4}`,
+        padding: collapsed ? '0' : `0 ${t.spacing4}`,
         justifyContent: collapsed ? 'center' : 'space-between',
-        borderBottom: `1px solid ${SB.border}`,
+        borderBottom: `1px solid ${t.colorNeutral300}`,
         flexShrink: 0,
       }}>
         {!collapsed && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: token.spacing2, overflow: 'hidden' }}>
-            {/* Mekari Pixel logo pill */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: t.spacing2, overflow: 'hidden' }}>
             <div style={{
-              width: '28px', height: '28px', borderRadius: token.radiusMd,
-              background: `linear-gradient(135deg, ${token.colorBrand} 0%, ${token.colorBrandMid} 100%)`,
+              width: '28px', height: '28px', borderRadius: t.radiusMd,
+              background: `linear-gradient(135deg, ${t.colorBrand} 0%, ${t.colorBrandMid} 100%)`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}>
@@ -185,15 +191,15 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
               </svg>
             </div>
             <div>
-              <div style={{ fontWeight: token.fontWeightBold, fontSize: token.fontSizeBase, color: SB.brandText, lineHeight: 1.2 }}>TaskApp</div>
-              <div style={{ fontSize: token.fontSizeXs, color: SB.brandSubText, lineHeight: 1.2 }}>by Mekari</div>
+              <div style={{ fontWeight: t.fontWeightBold, fontSize: t.fontSizeBase, color: t.colorNeutral1000, lineHeight: 1.2 }}>TaskApp</div>
+              <div style={{ fontSize: t.fontSizeXs, color: t.colorNeutral800, lineHeight: 1.2 }}>by Mekari</div>
             </div>
           </div>
         )}
         {collapsed && (
           <div style={{
-            width: '32px', height: '32px', borderRadius: token.radiusMd,
-            background: `linear-gradient(135deg, ${token.colorBrand} 0%, ${token.colorBrandMid} 100%)`,
+            width: '32px', height: '32px', borderRadius: t.radiusMd,
+            background: `linear-gradient(135deg, ${t.colorBrand} 0%, ${t.colorBrandMid} 100%)`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -203,35 +209,33 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
           </div>
         )}
 
-        {/* Collapse toggle (desktop only) */}
         {!isMobile && (
           <button
             onClick={onToggleCollapse}
             title={collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'}
             style={{
               width: '24px', height: '24px',
-              borderRadius: token.radiusFull,
-              border: `1px solid ${token.colorNeutral300}`,
-              backgroundColor: token.colorWhite,
+              borderRadius: t.radiusFull,
+              border: `1px solid ${t.colorNeutral300}`,
+              backgroundColor: t.colorWhite,
               cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: token.colorNeutral800,
+              color: t.colorNeutral800,
               flexShrink: 0,
               transition: 'box-shadow 0.15s',
-              boxShadow: token.shadowSm,
+              boxShadow: t.shadowSm,
             }}
-            onMouseEnter={e => e.currentTarget.style.boxShadow = token.shadowMd}
-            onMouseLeave={e => e.currentTarget.style.boxShadow = token.shadowSm}
+            onMouseEnter={e => e.currentTarget.style.boxShadow = t.shadowMd}
+            onMouseLeave={e => e.currentTarget.style.boxShadow = t.shadowSm}
           >
             {collapsed ? <IconChevronRight /> : <IconChevronLeft />}
           </button>
         )}
 
-        {/* Mobile close button */}
         {isMobile && onClose && (
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: token.colorNeutral800 }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: t.colorNeutral800 }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
@@ -240,50 +244,50 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
         )}
       </div>
 
-      {/* ── User Info ────────────────────────────────────────────────────── */}
+      {/* ── User Info ──────────────────────────────────────────────────── */}
       <div style={{
-        padding: collapsed ? `${token.spacing3} 0` : token.spacing4,
-        borderBottom: `1px solid ${SB.border}`,
+        padding: collapsed ? `${t.spacing3} 0` : t.spacing4,
+        borderBottom: `1px solid ${t.colorNeutral300}`,
         display: 'flex',
         alignItems: 'center',
-        gap: token.spacing3,
+        gap: t.spacing3,
         justifyContent: collapsed ? 'center' : 'flex-start',
         flexShrink: 0,
         overflow: 'hidden',
       }}>
         <div style={{
-          width: '36px', height: '36px', borderRadius: token.radiusFull,
-          backgroundColor: token.colorBrandLight,
+          width: '36px', height: '36px', borderRadius: t.radiusFull,
+          backgroundColor: t.colorBrandLight,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: token.fontSizeMd, fontWeight: token.fontWeightBold, color: token.colorBrand,
+          fontSize: t.fontSizeMd, fontWeight: t.fontWeightBold, color: t.colorBrand,
           flexShrink: 0,
         }}>
           {currentUser?.name?.charAt(0).toUpperCase()}
         </div>
         {!collapsed && (
           <div style={{ overflow: 'hidden', minWidth: 0 }}>
-            <div style={{ fontWeight: token.fontWeightSemibold, fontSize: token.fontSizeBase, color: SB.brandText, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontWeight: t.fontWeightSemibold, fontSize: t.fontSizeBase, color: t.colorNeutral1000, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {currentUser?.name}
             </div>
-            <div style={{ fontSize: token.fontSizeXs, color: SB.brandSubText, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: t.fontSizeXs, color: t.colorNeutral800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {currentUser?.email || currentUser?.id}
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Navigation ────────────────────────────────────────────────────── */}
+      {/* ── Navigation ────────────────────────────────────────────────── */}
       <nav style={{
         flex: 1,
-        padding: `${token.spacing2} ${collapsed ? token.spacing2 : token.spacing3}`,
+        padding: `${t.spacing2} ${collapsed ? t.spacing2 : t.spacing3}`,
         overflowY: 'auto',
         overflowX: 'hidden',
       }}>
         {!collapsed && (
           <div style={{
-            fontSize: token.fontSizeXs, fontWeight: token.fontWeightSemibold,
-            color: token.colorNeutral400, textTransform: 'uppercase', letterSpacing: '0.8px',
-            padding: `${token.spacing2} ${token.spacing3}`, marginBottom: token.spacing1,
+            fontSize: t.fontSizeXs, fontWeight: t.fontWeightSemibold,
+            color: t.colorNeutral400, textTransform: 'uppercase', letterSpacing: '0.8px',
+            padding: `${t.spacing2} ${t.spacing3}`, marginBottom: t.spacing1,
           }}>
             Menu
           </div>
@@ -297,14 +301,15 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
             active={activeNav === id}
             collapsed={collapsed}
             onClick={(navId) => { onNavChange(navId); onClose?.(); }}
+            t={t}
           />
         ))}
       </nav>
 
-      {/* ── Logout ───────────────────────────────────────────────────────── */}
+      {/* ── Logout ──────────────────────────────────────────────────── */}
       <div style={{
-        padding: `${token.spacing2} ${collapsed ? token.spacing2 : token.spacing3}`,
-        borderTop: `1px solid ${SB.border}`,
+        padding: `${t.spacing2} ${collapsed ? t.spacing2 : t.spacing3}`,
+        borderTop: `1px solid ${t.colorNeutral300}`,
         flexShrink: 0,
       }}>
         <button
@@ -315,14 +320,14 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
           style={{
             width: '100%',
             display: 'flex', alignItems: 'center',
-            gap: token.spacing3,
-            padding: collapsed ? `10px 0` : `10px ${token.spacing3}`,
+            gap: t.spacing3,
+            padding: collapsed ? `10px 0` : `10px ${t.spacing3}`,
             justifyContent: collapsed ? 'center' : 'flex-start',
-            background: logoutHover ? SB.logoutHoverBg : 'transparent',
-            border: 'none', borderRadius: token.radiusMd,
-            cursor: 'pointer', color: SB.logoutColor,
-            fontSize: token.fontSizeBase, fontWeight: token.fontWeightMedium,
-            textAlign: 'left', fontFamily: token.fontFamily,
+            background: logoutHover ? t.colorDangerLight : 'transparent',
+            border: 'none', borderRadius: t.radiusMd,
+            cursor: 'pointer', color: t.colorDanger,
+            fontSize: t.fontSizeBase, fontWeight: t.fontWeightMedium,
+            textAlign: 'left', fontFamily: t.fontFamily,
             transition: 'background 0.12s ease',
           }}
         >
@@ -336,6 +341,7 @@ function Sidebar({ currentUser, activeNav, onNavChange, onLogout, collapsed, onT
 
 // ─── Main Dashboard Layout ────────────────────────────────────────────────────
 export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout, pageTitle, showBack, onBack, children }) {
+  const { t, isDark, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -356,8 +362,8 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      fontFamily: token.fontFamily,
-      backgroundColor: token.colorSlate100,
+      fontFamily: t.fontFamily,
+      backgroundColor: t.colorSlate100,
       WebkitFontSmoothing: 'antialiased',
     }}>
       <style>{`
@@ -365,17 +371,17 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${token.colorNeutral300}; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb { background: ${t.colorNeutral300}; border-radius: 99px; }
       `}</style>
 
-      {/* ── Desktop Sidebar (fixed) ─────────────────────────────────────────── */}
+      {/* ── Desktop Sidebar ───────────────────────────────────────────────── */}
       {!isMobile && (
         <div style={{
           position: 'fixed', top: 0, left: 0, bottom: 0,
           width: collapsed ? `${SIDEBAR_COLLAPSED}px` : `${SIDEBAR_EXPANDED}px`,
           transition: 'width 0.22s cubic-bezier(.4,0,.2,1)',
           zIndex: 200,
-          boxShadow: token.shadowSm,
+          boxShadow: t.shadowSm,
         }}>
           <Sidebar
             currentUser={currentUser}
@@ -385,11 +391,12 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
             collapsed={collapsed}
             onToggleCollapse={() => setCollapsed(c => !c)}
             isMobile={false}
+            t={t}
           />
         </div>
       )}
 
-      {/* ── Mobile Overlay + Sidebar ────────────────────────────────────────── */}
+      {/* ── Mobile Overlay + Sidebar ──────────────────────────────────────── */}
       {isMobile && mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
@@ -408,7 +415,7 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
           width: `${SIDEBAR_EXPANDED}px`,
           zIndex: 301,
           transition: 'left 0.25s cubic-bezier(.4,0,.2,1)',
-          boxShadow: mobileOpen ? token.shadowLg : 'none',
+          boxShadow: mobileOpen ? t.shadowLg : 'none',
         }}>
           <Sidebar
             currentUser={currentUser}
@@ -418,11 +425,12 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
             collapsed={false}
             isMobile={true}
             onClose={() => setMobileOpen(false)}
+            t={t}
           />
         </div>
       )}
 
-      {/* ── Main Content ───────────────────────────────────────────────────── */}
+      {/* ── Main Content ─────────────────────────────────────────────────── */}
       <div style={{
         flex: 1,
         marginLeft: `${sidebarWidth}px`,
@@ -434,64 +442,82 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
         {/* Topbar */}
         <header style={{
           height: '56px',
-          backgroundColor: token.colorWhite,
-          borderBottom: `1px solid ${token.colorNeutral300}`,
+          backgroundColor: t.colorWhite,
+          borderBottom: `1px solid ${t.colorNeutral300}`,
           display: 'flex',
           alignItems: 'center',
-          padding: `0 ${token.spacing5}`,
-          gap: token.spacing3,
-          boxShadow: token.shadowXs,
+          padding: `0 ${t.spacing5}`,
+          gap: t.spacing3,
+          boxShadow: t.shadowXs,
           position: 'sticky',
           top: 0,
           zIndex: 100,
         }}>
-          {/* Mobile hamburger */}
           {isMobile && (
             <button
               onClick={() => setMobileOpen(true)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: token.colorNeutral900 }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: t.colorNeutral900 }}
             >
               <IconMenu />
             </button>
           )}
 
-          {/* Back button */}
           {showBack && (
             <button
               onClick={onBack}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: token.colorNeutral900, alignItems: 'center' }}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '4px', color: t.colorNeutral900, alignItems: 'center' }}
             >
               <IconArrowBack />
             </button>
           )}
 
-          {/* Page title */}
           <h1 style={{
-            fontSize: token.fontSizeMd,
-            fontWeight: token.fontWeightSemibold,
-            color: token.colorNeutral1000,
+            fontSize: t.fontSizeMd,
+            fontWeight: t.fontWeightSemibold,
+            color: t.colorNeutral1000,
             margin: 0,
             letterSpacing: '-0.1px',
           }}>
             {pageTitle}
           </h1>
 
-          {/* Right: User pill */}
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: token.spacing2 }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: t.spacing2 }}>
+            {/* Dark/Light mode toggle */}
+            <button
+              onClick={toggleTheme}
+              title={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+              style={{
+                width: '34px', height: '34px',
+                borderRadius: t.radiusFull,
+                border: `1px solid ${t.colorNeutral300}`,
+                backgroundColor: t.colorNeutral100,
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: t.colorNeutral800,
+                flexShrink: 0,
+                transition: 'background-color 0.15s ease, color 0.15s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.backgroundColor = t.colorNeutral200; e.currentTarget.style.color = t.colorNeutral1000; }}
+              onMouseLeave={e => { e.currentTarget.style.backgroundColor = t.colorNeutral100; e.currentTarget.style.color = t.colorNeutral800; }}
+            >
+              {isDark ? <IconSun /> : <IconMoon />}
+            </button>
+
+            {/* User pill */}
             <div style={{
-              display: 'flex', alignItems: 'center', gap: token.spacing2,
-              padding: `5px ${token.spacing3} 5px 5px`,
-              backgroundColor: token.colorBrandLight,
-              borderRadius: token.radiusFull,
-              fontSize: token.fontSizeSm,
-              color: token.colorBrand,
-              fontWeight: token.fontWeightSemibold,
+              display: 'flex', alignItems: 'center', gap: t.spacing2,
+              padding: `5px ${t.spacing3} 5px 5px`,
+              backgroundColor: t.colorBrandLight,
+              borderRadius: t.radiusFull,
+              fontSize: t.fontSizeSm,
+              color: t.colorBrand,
+              fontWeight: t.fontWeightSemibold,
             }}>
               <div style={{
-                width: '24px', height: '24px', borderRadius: token.radiusFull,
-                background: `linear-gradient(135deg, ${token.colorBrand}, ${token.colorBrandMid})`,
+                width: '24px', height: '24px', borderRadius: t.radiusFull,
+                background: `linear-gradient(135deg, ${t.colorBrand}, ${t.colorBrandMid})`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#fff', fontSize: '11px', fontWeight: token.fontWeightBold,
+                color: '#fff', fontSize: '11px', fontWeight: t.fontWeightBold,
               }}>
                 {currentUser?.name?.charAt(0).toUpperCase()}
               </div>
@@ -505,7 +531,7 @@ export function DashboardLayout({ currentUser, activeNav, onNavChange, onLogout,
         {/* Page content */}
         <main style={{
           flex: 1,
-          padding: `${token.spacing5} ${token.spacing4}`,
+          padding: `${t.spacing5} ${t.spacing4}`,
           maxWidth: '720px',
           width: '100%',
           margin: '0 auto',

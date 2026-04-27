@@ -2,7 +2,15 @@
  * Mekari Pixel Design Tokens v2.4
  * Adapted from https://docs.mekari.design/docs/design-token-v2-4.html
  * Applied to React inline styles (no Vue/Pixel3 library required)
+ *
+ * Token mode is fixed to 2.4 for this project. Do not mix with 2.1 values.
+ * When choosing values, use the semantic groups (text.*, bg.*, border.*,
+ * space.*, typography.*) attached at the bottom of `token`/`darkToken` —
+ * the scale-based names (colorNeutral800, spacing4, ...) are kept for
+ * backward compatibility.
  */
+
+export const TOKEN_MODE = '2.4';
 
 export const token = {
   // ─── Brand Colors (Indigo) ─────────────────────────────────────────────────
@@ -87,220 +95,335 @@ export const token = {
   spacing12: '48px',
 };
 
-// ─── Shared Styles ─────────────────────────────────────────────────────────────
-export const s = {
-  appWrapper: {
-    fontFamily: token.fontFamily,
-    minHeight: '100vh',
-    backgroundColor: token.colorSlate100,
-    color: token.colorNeutral1000,
-    fontSize: token.fontSizeBase,
-    lineHeight: token.lineHeightBase,
-    WebkitFontSmoothing: 'antialiased',
-  },
-
-  topBar: {
-    backgroundColor: token.colorWhite,
-    borderBottom: `1px solid ${token.colorNeutral300}`,
-    padding: `0 ${token.spacing6}`,
-    height: '56px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: token.spacing3,
-    boxShadow: token.shadowXs,
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-  },
-
-  topBarTitle: {
-    fontSize: token.fontSizeMd,
-    fontWeight: token.fontWeightSemibold,
-    color: token.colorNeutral1000,
-    margin: 0,
-    letterSpacing: '-0.1px',
-  },
-
-  content: {
-    padding: `${token.spacing5} ${token.spacing4}`,
-    maxWidth: '600px',
-    margin: '0 auto',
-    paddingBottom: '96px',
-  },
-
-  // ─── Card ──────────────────────────────────────────────────────────────────
-  card: {
-    backgroundColor: token.colorWhite,
-    borderRadius: token.radiusLg,
-    boxShadow: token.shadowSm,
-    border: `1px solid ${token.colorNeutral300}`,
-    overflow: 'hidden',
-    marginBottom: token.spacing4,
-  },
-
-  cardHeader: {
-    padding: `${token.spacing4} ${token.spacing5}`,
-    borderBottom: `1px solid ${token.colorNeutral200}`,
-    backgroundColor: token.colorWhite,
-  },
-
-  cardBody: {
-    padding: token.spacing5,
-  },
-
-  cardTitle: {
-    margin: 0,
-    fontSize: token.fontSizeMd,
-    fontWeight: token.fontWeightSemibold,
-    color: token.colorNeutral1000,
-    lineHeight: token.lineHeightSm,
-    letterSpacing: '-0.1px',
-  },
-
-  cardSubtitle: {
-    margin: `${token.spacing1} 0 0`,
-    fontSize: token.fontSizeSm,
-    color: token.colorNeutral800,
-    lineHeight: token.lineHeightBase,
-  },
-
-  // ─── Buttons (Mekari Pixel style) ─────────────────────────────────────────
-  btnPrimary: {
-    width: '100%',
-    padding: `10px ${token.spacing4}`,
-    backgroundColor: token.colorBrand,
-    color: token.colorWhite,
-    border: `1px solid ${token.colorBrand}`,
-    borderRadius: token.radiusMd,
-    fontSize: token.fontSizeBase,
-    fontWeight: token.fontWeightSemibold,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: token.spacing2,
-    transition: 'background-color 0.15s ease, border-color 0.15s ease',
-    letterSpacing: '0.1px',
-    lineHeight: '20px',
-    fontFamily: token.fontFamily,
-  },
-
-  btnSecondary: {
-    width: '100%',
-    padding: `10px ${token.spacing4}`,
-    backgroundColor: token.colorWhite,
-    color: token.colorNeutral900,
-    border: `1px solid ${token.colorNeutral300}`,
-    borderRadius: token.radiusMd,
-    fontSize: token.fontSizeBase,
-    fontWeight: token.fontWeightMedium,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: token.spacing2,
-    transition: 'background-color 0.15s ease, border-color 0.15s ease',
-    letterSpacing: '0.1px',
-    lineHeight: '20px',
-    fontFamily: token.fontFamily,
-  },
-
-  btnSuccess: {
-    width: '100%',
-    padding: `10px ${token.spacing4}`,
-    backgroundColor: token.colorSuccess,
-    color: token.colorWhite,
-    border: `1px solid ${token.colorSuccess}`,
-    borderRadius: token.radiusMd,
-    fontSize: token.fontSizeBase,
-    fontWeight: token.fontWeightSemibold,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: token.spacing2,
-    transition: 'background-color 0.15s ease',
-    letterSpacing: '0.1px',
-    lineHeight: '20px',
-    fontFamily: token.fontFamily,
-  },
-
-  btnDisabled: {
-    opacity: 0.45,
-    cursor: 'not-allowed',
-    pointerEvents: 'none',
-  },
-
-  // ─── Badge (Mekari style tags) ─────────────────────────────────────────────
-  badge: (type = 'neutral') => {
-    const variants = {
-      neutral: { bg: token.colorNeutral200, color: token.colorNeutral900 },
-      brand: { bg: token.colorBrandLight, color: token.colorBrand },
-      success: { bg: token.colorSuccessLight, color: token.colorSuccess },
-      warning: { bg: token.colorWarningLight, color: token.colorWarning },
-      danger: { bg: token.colorDangerLight, color: token.colorDanger },
-    };
-    const v = variants[type] || variants.neutral;
-    return {
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: `2px ${token.spacing2}`,
-      backgroundColor: v.bg,
-      color: v.color,
-      borderRadius: token.radiusFull,
-      fontSize: token.fontSizeSm,
-      fontWeight: token.fontWeightSemibold,
-      lineHeight: '18px',
-      whiteSpace: 'nowrap',
-    };
-  },
-
-  // ─── Alert / Banner (Mekari Pixel inline notification) ────────────────────
-  alert: (type = 'brand') => {
-    const variants = {
-      brand: { bg: token.colorBrandLight, color: token.colorBrand, border: token.colorBrand },
-      success: { bg: token.colorSuccessLight, color: token.colorSuccess, border: token.colorSuccess },
-      danger: { bg: token.colorDangerLight, color: token.colorDanger, border: token.colorDanger },
-      warning: { bg: token.colorWarningLight, color: token.colorWarning, border: '#B8890A' },
-      info: { bg: token.colorBrandLight, color: token.colorBrand, border: token.colorBrand },
-      error: { bg: token.colorDangerLight, color: token.colorDanger, border: token.colorDanger },
-    };
-    const v = variants[type] || variants.brand;
-    return {
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: token.spacing3,
-      padding: `${token.spacing3} ${token.spacing4}`,
-      backgroundColor: v.bg,
-      color: v.color,
-      borderLeft: `3px solid ${v.border}`,
-      borderRadius: token.radiusSm,
-      marginBottom: token.spacing3,
-      fontSize: token.fontSizeSm,
-      lineHeight: token.lineHeightBase,
-    };
-  },
-
-  helperText: {
-    fontSize: token.fontSizeSm,
-    color: token.colorNeutral800,
-    marginTop: token.spacing2,
-    lineHeight: token.lineHeightBase,
-  },
-
-  // ─── Divider ───────────────────────────────────────────────────────────────
-  divider: {
-    border: 'none',
-    borderTop: `1px solid ${token.colorNeutral200}`,
-    margin: `${token.spacing3} 0`,
-  },
-
-  // ─── Label ──────────────────────────────────────────────────────────────────
-  label: {
-    fontSize: token.fontSizeSm,
-    fontWeight: token.fontWeightSemibold,
-    color: token.colorNeutral900,
-    display: 'block',
-    marginBottom: token.spacing1,
-  },
+// ─── Dark Mode Token Overrides ─────────────────────────────────────────────────
+const darkTokenBase = {
+  ...token,
+  // Page background
+  colorSlate100: '#1A1D21',
+  colorSlate200: '#1E2228',
+  colorSlate300: '#22272E',
+  // Surface (cards, sidebar, topbar)
+  colorWhite: '#252B33',
+  // Neutrals
+  colorNeutral100: '#2A2F38',
+  colorNeutral200: '#313840',
+  colorNeutral300: '#3E4550',
+  colorNeutral400: '#656D79',
+  colorNeutral800: '#9AA3AE',
+  colorNeutral900: '#CDD1D9',
+  colorNeutral1000: '#E8EAED',
+  // Tint backgrounds
+  colorBrandLight: '#1A2255',
+  colorSuccessLight: '#0B2C1E',
+  colorDangerLight: '#2C1413',
+  colorWarningLight: '#2B2210',
+  // Stronger shadows on dark backgrounds
+  shadowXs: '0 1px 2px rgba(0,0,0,0.30)',
+  shadowSm: '0 1px 4px rgba(0,0,0,0.40)',
+  shadowMd: '0 2px 8px rgba(0,0,0,0.50)',
+  shadowLg: '0 4px 16px rgba(0,0,0,0.60)',
 };
+
+// ─── Pixel 3 Semantic Groupings ────────────────────────────────────────────────
+// Layered on top of the scale-based tokens. Mirrors Pixel 3 v2.4 vocabulary:
+// text.primary / bg.surface / border.default / space.md / typography.h2.
+function withSemantic(base) {
+  return {
+    ...base,
+
+    // Color groups (Pixel 3 semantic naming)
+    text: {
+      primary: base.colorNeutral1000,
+      secondary: base.colorNeutral800,
+      tertiary: base.colorNeutral400,
+      brand: base.colorBrand,
+      success: base.colorSuccess,
+      warning: base.colorWarning,
+      danger: base.colorDanger,
+      inverse: '#fff',
+    },
+    bg: {
+      page: base.colorSlate100,
+      surface: base.colorWhite,
+      neutral: base.colorNeutral100,
+      neutralBold: base.colorNeutral200,
+      brand: base.colorBrand,
+      brandSubtle: base.colorBrandLight,
+      success: base.colorSuccess,
+      successSubtle: base.colorSuccessLight,
+      warning: base.colorWarning,
+      warningSubtle: base.colorWarningLight,
+      danger: base.colorDanger,
+      dangerSubtle: base.colorDangerLight,
+    },
+    border: {
+      default: base.colorNeutral300,
+      subtle: base.colorNeutral200,
+      brand: base.colorBrand,
+      success: base.colorSuccess,
+      danger: base.colorDanger,
+    },
+
+    // Spacing scale (Pixel 3 t-shirt sizing)
+    space: {
+      '4xs': '2px',
+      '3xs': base.spacing1,   // 4px
+      '2xs': '6px',
+      xs:    base.spacing2,   // 8px
+      sm:    base.spacing3,   // 12px
+      md:    base.spacing4,   // 16px
+      lg:    base.spacing5,   // 20px
+      xl:    base.spacing6,   // 24px
+      '2xl': base.spacing8,   // 32px
+      '3xl': base.spacing10,  // 40px
+      '4xl': '80px',
+    },
+
+    // Typography presets (apply directly as React style)
+    typography: {
+      h1:           { fontSize: base.fontSizeXxl, fontWeight: base.fontWeightBold,     lineHeight: base.lineHeightSm,   letterSpacing: '-0.2px' },
+      h2:           { fontSize: base.fontSizeXl,  fontWeight: base.fontWeightBold,     lineHeight: base.lineHeightSm,   letterSpacing: '-0.1px' },
+      h3:           { fontSize: base.fontSizeLg,  fontWeight: base.fontWeightSemibold, lineHeight: base.lineHeightSm,   letterSpacing: '-0.1px' },
+      label:        { fontSize: base.fontSizeBase, fontWeight: base.fontWeightSemibold, lineHeight: base.lineHeightSm },
+      'label-small':{ fontSize: base.fontSizeSm,   fontWeight: base.fontWeightSemibold, lineHeight: base.lineHeightSm },
+      body:         { fontSize: base.fontSizeBase, fontWeight: base.fontWeightRegular,  lineHeight: base.lineHeightBase },
+      'body-small': { fontSize: base.fontSizeSm,   fontWeight: base.fontWeightRegular,  lineHeight: base.lineHeightBase },
+      overline:     { fontSize: base.fontSizeXs,   fontWeight: base.fontWeightSemibold, lineHeight: base.lineHeightSm, letterSpacing: '0.8px', textTransform: 'uppercase' },
+    },
+  };
+}
+
+// Re-export the original `token` and a `darkToken` enriched with semantic groups.
+const tokenWithSemantic = withSemantic(token);
+Object.assign(token, {
+  text: tokenWithSemantic.text,
+  bg: tokenWithSemantic.bg,
+  border: tokenWithSemantic.border,
+  space: tokenWithSemantic.space,
+  typography: tokenWithSemantic.typography,
+});
+
+export const darkToken = withSemantic(darkTokenBase);
+
+// ─── Shared Styles Factory ─────────────────────────────────────────────────────
+export function makeS(t) {
+  return {
+    appWrapper: {
+      fontFamily: t.fontFamily,
+      minHeight: '100vh',
+      backgroundColor: t.colorSlate100,
+      color: t.colorNeutral1000,
+      fontSize: t.fontSizeBase,
+      lineHeight: t.lineHeightBase,
+      WebkitFontSmoothing: 'antialiased',
+    },
+
+    topBar: {
+      backgroundColor: t.colorWhite,
+      borderBottom: `1px solid ${t.colorNeutral300}`,
+      padding: `0 ${t.spacing6}`,
+      height: '56px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: t.spacing3,
+      boxShadow: t.shadowXs,
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+    },
+
+    topBarTitle: {
+      fontSize: t.fontSizeMd,
+      fontWeight: t.fontWeightSemibold,
+      color: t.colorNeutral1000,
+      margin: 0,
+      letterSpacing: '-0.1px',
+    },
+
+    content: {
+      padding: `${t.spacing5} ${t.spacing4}`,
+      maxWidth: '600px',
+      margin: '0 auto',
+      paddingBottom: '96px',
+    },
+
+    // ─── Card ────────────────────────────────────────────────────────────────
+    card: {
+      backgroundColor: t.colorWhite,
+      borderRadius: t.radiusLg,
+      boxShadow: t.shadowSm,
+      border: `1px solid ${t.colorNeutral300}`,
+      overflow: 'hidden',
+      marginBottom: t.spacing4,
+    },
+
+    cardHeader: {
+      padding: `${t.spacing4} ${t.spacing5}`,
+      borderBottom: `1px solid ${t.colorNeutral200}`,
+      backgroundColor: t.colorWhite,
+    },
+
+    cardBody: {
+      padding: t.spacing5,
+    },
+
+    cardTitle: {
+      margin: 0,
+      fontSize: t.fontSizeMd,
+      fontWeight: t.fontWeightSemibold,
+      color: t.colorNeutral1000,
+      lineHeight: t.lineHeightSm,
+      letterSpacing: '-0.1px',
+    },
+
+    cardSubtitle: {
+      margin: `${t.spacing1} 0 0`,
+      fontSize: t.fontSizeSm,
+      color: t.colorNeutral800,
+      lineHeight: t.lineHeightBase,
+    },
+
+    // ─── Buttons (Mekari Pixel style) ────────────────────────────────────────
+    btnPrimary: {
+      width: '100%',
+      padding: `10px ${t.spacing4}`,
+      backgroundColor: t.colorBrand,
+      color: '#fff',
+      border: `1px solid ${t.colorBrand}`,
+      borderRadius: t.radiusMd,
+      fontSize: t.fontSizeBase,
+      fontWeight: t.fontWeightSemibold,
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: t.spacing2,
+      transition: 'background-color 0.15s ease, border-color 0.15s ease',
+      letterSpacing: '0.1px',
+      lineHeight: '20px',
+      fontFamily: t.fontFamily,
+    },
+
+    btnSecondary: {
+      width: '100%',
+      padding: `10px ${t.spacing4}`,
+      backgroundColor: t.colorWhite,
+      color: t.colorNeutral900,
+      border: `1px solid ${t.colorNeutral300}`,
+      borderRadius: t.radiusMd,
+      fontSize: t.fontSizeBase,
+      fontWeight: t.fontWeightMedium,
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: t.spacing2,
+      transition: 'background-color 0.15s ease, border-color 0.15s ease',
+      letterSpacing: '0.1px',
+      lineHeight: '20px',
+      fontFamily: t.fontFamily,
+    },
+
+    btnSuccess: {
+      width: '100%',
+      padding: `10px ${t.spacing4}`,
+      backgroundColor: t.colorSuccess,
+      color: '#fff',
+      border: `1px solid ${t.colorSuccess}`,
+      borderRadius: t.radiusMd,
+      fontSize: t.fontSizeBase,
+      fontWeight: t.fontWeightSemibold,
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: t.spacing2,
+      transition: 'background-color 0.15s ease',
+      letterSpacing: '0.1px',
+      lineHeight: '20px',
+      fontFamily: t.fontFamily,
+    },
+
+    btnDisabled: {
+      opacity: 0.45,
+      cursor: 'not-allowed',
+      pointerEvents: 'none',
+    },
+
+    // ─── Badge (Mekari style tags) ──────────────────────────────────────────
+    badge: (type = 'neutral') => {
+      const variants = {
+        neutral: { bg: t.colorNeutral200, color: t.colorNeutral900 },
+        brand: { bg: t.colorBrandLight, color: t.colorBrand },
+        success: { bg: t.colorSuccessLight, color: t.colorSuccess },
+        warning: { bg: t.colorWarningLight, color: t.colorWarning },
+        danger: { bg: t.colorDangerLight, color: t.colorDanger },
+      };
+      const v = variants[type] || variants.neutral;
+      return {
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: `2px ${t.spacing2}`,
+        backgroundColor: v.bg,
+        color: v.color,
+        borderRadius: t.radiusFull,
+        fontSize: t.fontSizeSm,
+        fontWeight: t.fontWeightSemibold,
+        lineHeight: '18px',
+        whiteSpace: 'nowrap',
+      };
+    },
+
+    // ─── Alert / Banner ──────────────────────────────────────────────────────
+    alert: (type = 'brand') => {
+      const variants = {
+        brand: { bg: t.colorBrandLight, color: t.colorBrand, border: t.colorBrand },
+        success: { bg: t.colorSuccessLight, color: t.colorSuccess, border: t.colorSuccess },
+        danger: { bg: t.colorDangerLight, color: t.colorDanger, border: t.colorDanger },
+        warning: { bg: t.colorWarningLight, color: t.colorWarning, border: '#B8890A' },
+        info: { bg: t.colorBrandLight, color: t.colorBrand, border: t.colorBrand },
+        error: { bg: t.colorDangerLight, color: t.colorDanger, border: t.colorDanger },
+      };
+      const v = variants[type] || variants.brand;
+      return {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: t.spacing3,
+        padding: `${t.spacing3} ${t.spacing4}`,
+        backgroundColor: v.bg,
+        color: v.color,
+        borderLeft: `3px solid ${v.border}`,
+        borderRadius: t.radiusSm,
+        marginBottom: t.spacing3,
+        fontSize: t.fontSizeSm,
+        lineHeight: t.lineHeightBase,
+      };
+    },
+
+    helperText: {
+      fontSize: t.fontSizeSm,
+      color: t.colorNeutral800,
+      marginTop: t.spacing2,
+      lineHeight: t.lineHeightBase,
+    },
+
+    // ─── Divider ─────────────────────────────────────────────────────────────
+    divider: {
+      border: 'none',
+      borderTop: `1px solid ${t.colorNeutral200}`,
+      margin: `${t.spacing3} 0`,
+    },
+
+    // ─── Label ───────────────────────────────────────────────────────────────
+    label: {
+      fontSize: t.fontSizeSm,
+      fontWeight: t.fontWeightSemibold,
+      color: t.colorNeutral900,
+      display: 'block',
+      marginBottom: t.spacing1,
+    },
+  };
+}
+
+// ─── Backward-compatible static export (light mode) ───────────────────────────
+export const s = makeS(token);

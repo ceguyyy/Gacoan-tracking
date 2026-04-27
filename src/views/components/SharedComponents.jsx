@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { token } from '../styles/theme';
+import { useTheme } from '../styles/ThemeContext';
 
 export function Spinner({ size = 20, color = token.colorBrand }) {
   return (
@@ -21,6 +22,7 @@ export function Spinner({ size = 20, color = token.colorBrand }) {
 }
 
 export function ChecklistItem({ index, taskName, checked, onToggle, isLast, photo, uploading, onPhotoUpload }) {
+  const { t } = useTheme();
   const [hover, setHover] = useState(false);
   const fileInputRef = React.useRef(null);
 
@@ -29,15 +31,15 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: token.spacing3,
-        padding: `${token.spacing3} ${token.spacing5}`,
-        borderBottom: isLast ? 'none' : `1px solid ${token.colorNeutral200}`,
+        gap: t.spacing3,
+        padding: `${t.spacing3} ${t.spacing5}`,
+        borderBottom: isLast ? 'none' : `1px solid ${t.colorNeutral200}`,
         cursor: 'pointer',
         backgroundColor: checked
-          ? token.colorSuccessLight
+          ? t.colorSuccessLight
           : hover
-          ? token.colorNeutral100
-          : token.colorWhite,
+          ? t.colorNeutral100
+          : t.colorWhite,
         transition: 'background-color 0.1s ease',
       }}
       onMouseEnter={() => setHover(true)}
@@ -49,11 +51,11 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
         style={{
           width: '18px',
           height: '18px',
-          borderRadius: token.radiusSm,
+          borderRadius: t.radiusSm,
           border: checked
-            ? `2px solid ${token.colorSuccess}`
-            : `2px solid ${token.colorNeutral400}`,
-          backgroundColor: checked ? token.colorSuccess : token.colorWhite,
+            ? `2px solid ${t.colorSuccess}`
+            : `2px solid ${t.colorNeutral400}`,
+          backgroundColor: checked ? t.colorSuccess : 'transparent',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -77,12 +79,12 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
       {/* Label */}
       <span
         style={{
-          fontSize: token.fontSizeBase,
-          color: checked ? token.colorSuccess : token.colorNeutral900,
-          fontWeight: checked ? token.fontWeightMedium : token.fontWeightRegular,
+          fontSize: t.fontSizeBase,
+          color: checked ? t.colorSuccess : t.colorNeutral900,
+          fontWeight: checked ? t.fontWeightMedium : t.fontWeightRegular,
           textDecoration: checked ? 'line-through' : 'none',
           flex: 1,
-          lineHeight: token.lineHeightBase,
+          lineHeight: t.lineHeightBase,
         }}
       >
         {taskName}
@@ -91,10 +93,10 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
       {/* Photo Capture */}
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ display: 'flex', alignItems: 'center', gap: token.spacing2 }}
+        style={{ display: 'flex', alignItems: 'center', gap: t.spacing2 }}
       >
         {uploading ? (
-          <Spinner size={16} />
+          <Spinner size={16} color={t.colorBrand} />
         ) : photo ? (
           <img
             src={photo}
@@ -103,8 +105,8 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
               width: '30px',
               height: '30px',
               objectFit: 'cover',
-              borderRadius: token.radiusSm,
-              border: `1px solid ${token.colorNeutral300}`,
+              borderRadius: t.radiusSm,
+              border: `1px solid ${t.colorNeutral300}`,
             }}
           />
         ) : (
@@ -112,15 +114,15 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
             onClick={() => fileInputRef.current?.click()}
             style={{
               background: 'none',
-              border: `1px solid ${token.colorNeutral300}`,
-              borderRadius: token.radiusSm,
+              border: `1px solid ${t.colorNeutral300}`,
+              borderRadius: t.radiusSm,
               padding: '5px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: token.colorNeutral800,
-              backgroundColor: token.colorWhite,
+              color: t.colorNeutral800,
+              backgroundColor: t.colorWhite,
               transition: 'border-color 0.15s',
             }}
             title="Ambil Foto"
@@ -147,7 +149,7 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
       </div>
 
       {checked && (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={token.colorSuccess} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.colorSuccess} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
           <polyline points="22 4 12 14.01 9 11.01" />
         </svg>
