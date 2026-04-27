@@ -61,7 +61,7 @@ export function useTaskController(currentUser) {
   }, []);
 
   const startTaskExecution = useCallback(() => {
-    setTaskStartTime(new Date().toISOString());
+    setTaskStartTime(Date.now());
   }, []);
 
   const toggleCheck = useCallback((index) => {
@@ -102,7 +102,7 @@ export function useTaskController(currentUser) {
       })),
       user_location: userLocation,
       start_time: taskStartTime,
-      end_time: new Date().toISOString(),
+      end_time: Date.now(),
       submitted_at: new Date().toISOString(),
       status: "Completed"
     };
