@@ -13,6 +13,7 @@ export function useTaskController(currentUser) {
   const [checklist, setChecklist] = useState({});
   const [taskPhotos, setTaskPhotos] = useState({});
   const [uploadingPhoto, setUploadingPhoto] = useState({});
+  const [taskStartTime, setTaskStartTime] = useState(null);
 
   const [submitLoading, setSubmitLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -47,6 +48,7 @@ export function useTaskController(currentUser) {
     }
     setChecklist(initial);
     setTaskPhotos({});
+    setTaskStartTime(null);
     setSubmitError(null);
   }, []);
 
@@ -55,6 +57,11 @@ export function useTaskController(currentUser) {
     setChecklist({});
     setTaskPhotos({});
     setUploadingPhoto({});
+    setTaskStartTime(null);
+  }, []);
+
+  const startTaskExecution = useCallback(() => {
+    setTaskStartTime(new Date().toISOString());
   }, []);
 
   const toggleCheck = useCallback((index) => {
@@ -94,6 +101,8 @@ export function useTaskController(currentUser) {
         image: taskPhotos[i] || null,
       })),
       user_location: userLocation,
+      start_time: taskStartTime,
+      end_time: new Date().toISOString(),
       submitted_at: new Date().toISOString(),
       status: "Completed"
     };
@@ -124,6 +133,7 @@ export function useTaskController(currentUser) {
     selectedTask,
     selectTask,
     clearSelectedTask,
+    startTaskExecution,
     checklist,
     toggleCheck,
     allChecked,

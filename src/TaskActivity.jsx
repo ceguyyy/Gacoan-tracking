@@ -88,6 +88,7 @@ export default function TaskActivity() {
   };
 
   const handleStartTask = () => {
+    taskController.startTaskExecution();
     setScreen(SCREEN.TASK_EXECUTION);
   };
 
