@@ -81,6 +81,7 @@ export default function TaskActivity() {
 
   const handleSelectTask = (task) => {
     taskController.selectTask(task);
+    taskController.startTaskExecution();
     setValidationType('initial');
     setScreen(SCREEN.VALIDATION_INITIAL);
     valController.resetValidation();
@@ -88,7 +89,6 @@ export default function TaskActivity() {
   };
 
   const handleStartTask = () => {
-    taskController.startTaskExecution();
     setScreen(SCREEN.TASK_EXECUTION);
   };
 
