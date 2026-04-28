@@ -12,6 +12,7 @@ export function useTaskController(currentUser) {
   const [selectedTask, setSelectedTask] = useState(null);
   const [checklist, setChecklist] = useState({});
   const [taskPhotos, setTaskPhotos] = useState({});
+  const [taskNotes, setTaskNotes] = useState({});
   const [uploadingPhoto, setUploadingPhoto] = useState({});
   const [taskStartTime, setTaskStartTime] = useState(null);
 
@@ -43,11 +44,12 @@ export function useTaskController(currentUser) {
     const initial = {};
     if (task?.task) {
       task.task.forEach((_, i) => {
-        initial[i] = false;
+        initial[i] = "";
       });
     }
     setChecklist(initial);
     setTaskPhotos({});
+    setTaskNotes({});
     setTaskStartTime(null);
     setSubmitError(null);
   }, []);
@@ -56,6 +58,7 @@ export function useTaskController(currentUser) {
     setSelectedTask(null);
     setChecklist({});
     setTaskPhotos({});
+    setTaskNotes({});
     setUploadingPhoto({});
     setTaskStartTime(null);
   }, []);
@@ -64,11 +67,15 @@ export function useTaskController(currentUser) {
     setTaskStartTime(Date.now());
   }, []);
 
-  const toggleCheck = useCallback((index) => {
-    setChecklist((prev) => ({ ...prev, [index]: !prev[index] }));
+  const handleStatusChange = useCallback((index, status) => {
+    setChecklist((prev) => ({ ...prev, [index]: status }));
   }, []);
 
-  const allChecked = Object.keys(checklist).length > 0 && Object.values(checklist).every(Boolean);
+  const handleNoteChange = useCallback((index, note) => {
+    setTaskNotes((prev) => ({ ...prev, [index]: note }));
+  }, []);
+
+  const allChecked = Object.keys(checklist).length > 0 && Object.values(checklist).every(val => val !== "");
 
   const handlePhotoUpload = useCallback(async (index, file) => {
     if (!file || !selectedTask) return;
@@ -97,8 +104,9 @@ export function useTaskController(currentUser) {
       due_date: selectedTask.due_date,
       tasks: selectedTask.task.map((t, i) => ({
         task_name: t.task_name,
-        status: checklist[i] ?? false,
+        status: checklist[i] || "",
         image: taskPhotos[i] || null,
+        note: taskNotes[i] || "",
       })),
       user_location: userLocation,
       start_time: taskStartTime,
@@ -135,9 +143,11 @@ export function useTaskController(currentUser) {
     clearSelectedTask,
     startTaskExecution,
     checklist,
-    toggleCheck,
+    handleStatusChange,
     allChecked,
     taskPhotos,
+    taskNotes,
+    handleNoteChange,
     uploadingPhoto,
     handlePhotoUpload,
     submitActivity,

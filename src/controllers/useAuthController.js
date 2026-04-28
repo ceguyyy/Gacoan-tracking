@@ -32,7 +32,8 @@ export function useAuthController() {
     try {
       const detail = await fetchUserTalenta(user.email);
       if (detail) {
-        setCurrentUser(prev => ({ ...prev, ...detail }));
+        const { id: talentaId, ...restDetail } = detail;
+        setCurrentUser(prev => ({ ...prev, ...restDetail, talenta_id: talentaId }));
       }
     } catch (e) {
       console.error('Failed to fetch talenta data:', e);

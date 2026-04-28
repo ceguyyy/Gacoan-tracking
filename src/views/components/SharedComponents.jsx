@@ -21,21 +21,21 @@ export function Spinner({ size = 20, color = token.colorBrand }) {
   );
 }
 
-export function ChecklistItem({ index, taskName, checked, onToggle, isLast, photo, uploading, onPhotoUpload }) {
+export function ChecklistItem({ index, taskName, status, onStatusChange, isLast, photo, uploading, onPhotoUpload, note, onNoteChange }) {
   const { t } = useTheme();
   const [hover, setHover] = useState(false);
   const fileInputRef = React.useRef(null);
+  
+  const isFilled = status === 'met' || status === 'not_met';
 
   return (
     <div
       style={{
         display: 'flex',
-        alignItems: 'center',
-        gap: t.spacing3,
+        flexDirection: 'column',
         padding: `${t.spacing3} ${t.spacing5}`,
         borderBottom: isLast ? 'none' : `1px solid ${t.colorNeutral200}`,
-        cursor: 'pointer',
-        backgroundColor: checked
+        backgroundColor: isFilled
           ? t.colorSuccessLight
           : hover
           ? t.colorNeutral100
@@ -44,45 +44,34 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => onToggle(index)}
     >
-      {/* Mekari-style checkbox */}
-      <div
-        style={{
-          width: '18px',
-          height: '18px',
-          borderRadius: t.radiusSm,
-          border: checked
-            ? `2px solid ${t.colorSuccess}`
-            : `2px solid ${t.colorNeutral400}`,
-          backgroundColor: checked ? t.colorSuccess : 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          transition: 'all 0.15s ease',
-        }}
+      <div 
+        style={{ display: 'flex', alignItems: 'center', gap: t.spacing3, width: '100%' }}
       >
-        {checked && (
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path
-              d="M2 5l2 2 4-4"
-              stroke="#fff"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        )}
-      </div>
-
+        <select
+          value={status || ''}
+          onChange={(e) => onStatusChange(index, e.target.value)}
+          style={{
+            padding: `4px ${t.spacing2}`,
+            borderRadius: t.radiusSm,
+            border: `1px solid ${t.colorNeutral400}`,
+            fontSize: t.fontSizeSm,
+            fontFamily: t.fontFamily,
+            color: status ? t.colorNeutral1000 : t.colorNeutral500,
+            cursor: 'pointer',
+          }}
+        >
+          <option value="" disabled>Pilih Status</option>
+          <option value="met">Met</option>
+          <option value="not_met">Not Met</option>
+        </select>
       {/* Label */}
       <span
         style={{
           fontSize: t.fontSizeBase,
-          color: checked ? t.colorSuccess : t.colorNeutral900,
-          fontWeight: checked ? t.fontWeightMedium : t.fontWeightRegular,
-          textDecoration: checked ? 'line-through' : 'none',
+          color: isFilled ? t.colorSuccess : t.colorNeutral900,
+          fontWeight: isFilled ? t.fontWeightMedium : t.fontWeightRegular,
+          textDecoration: isFilled ? 'line-through' : 'none',
           flex: 1,
           lineHeight: t.lineHeightBase,
         }}
@@ -147,12 +136,29 @@ export function ChecklistItem({ index, taskName, checked, onToggle, isLast, phot
           }}
         />
       </div>
-
-      {checked && (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.colorSuccess} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
-        </svg>
+      </div>
+      
+      {isFilled && (
+        <div style={{ marginTop: t.spacing2, display: 'flex', flexDirection: 'column', gap: t.spacing1 }}>
+          <span style={{ fontSize: t.fontSizeSm, color: t.colorNeutral800, fontWeight: t.fontWeightMedium }}>Catatan Tugas</span>
+          <textarea
+            value={note}
+            onChange={(e) => onNoteChange(e.target.value)}
+            placeholder="Tambahkan catatan (opsional)..."
+            style={{
+              width: '100%',
+              minHeight: '60px',
+              padding: t.spacing2,
+              borderRadius: t.radiusSm,
+              border: `1px solid ${t.colorNeutral300}`,
+              fontSize: t.fontSizeSm,
+              color: t.colorNeutral1000,
+              resize: 'vertical',
+              fontFamily: t.fontFamily,
+            }}
+            onClick={(e) => e.stopPropagation()} // Prevent toggling checklist when clicking input
+          />
+        </div>
       )}
     </div>
   );

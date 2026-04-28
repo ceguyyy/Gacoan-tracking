@@ -220,11 +220,13 @@ export default function TaskActivity() {
           task={taskController.selectedTask}
           checklist={taskController.checklist}
           allChecked={taskController.allChecked}
-          onToggle={taskController.toggleCheck}
+          onStatusChange={taskController.handleStatusChange}
           onSubmitIntent={handleSubmitIntent}
           taskPhotos={taskController.taskPhotos}
           uploadingPhoto={taskController.uploadingPhoto}
           onPhotoUpload={taskController.handlePhotoUpload}
+          taskNotes={taskController.taskNotes}
+          onNoteChange={taskController.handleNoteChange}
         />
       )}
 

@@ -160,16 +160,29 @@ const FILTERS = [
 export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
   const { t, s } = useTheme();
   const [activeFilter, setActiveFilter] = React.useState('all');
+  const [dateFilter, setDateFilter] = React.useState('');
+
+  const dateFilteredTasks = React.useMemo(() => {
+    if (!dateFilter) return tasks;
+    return tasks.filter(tk => {
+      if (!tk.due_date) return false;
+      // ensure stable timezone comparison by using local date parsing if possible, 
+      // but assuming due_date is a timestamp we convert to local date string.
+      const d = new Date(tk.due_date);
+      const tkDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return tkDate === dateFilter;
+    });
+  }, [tasks, dateFilter]);
 
   const counts = React.useMemo(() => {
-    const c = { all: tasks.length, in_progress: 0, upcoming: 0, overdue: 0 };
-    tasks.forEach(tk => { c[getTaskStatus(tk)]++; });
+    const c = { all: dateFilteredTasks.length, in_progress: 0, upcoming: 0, overdue: 0 };
+    dateFilteredTasks.forEach(tk => { c[getTaskStatus(tk)]++; });
     return c;
-  }, [tasks]);
+  }, [dateFilteredTasks]);
 
   const filteredTasks = activeFilter === 'all'
-    ? tasks
-    : tasks.filter(tk => getTaskStatus(tk) === activeFilter);
+    ? dateFilteredTasks
+    : dateFilteredTasks.filter(tk => getTaskStatus(tk) === activeFilter);
 
   if (tasks.length === 0) {
     return (
@@ -204,6 +217,59 @@ export function ScreenTaskSelect({ tasks, onSelectTask, currentUser }) {
           <p style={s.helperText}>{tasks.length} tugas di-assign kepada Anda.</p>
         </div>
         <div style={s.badge('brand')}>{tasks.length} Tugas</div>
+      </div>
+
+      {/* Date Filter */}
+      <div style={{ marginBottom: t.spacing4, display: 'flex', gap: t.spacing2, alignItems: 'center' }}>
+        <input 
+          type="date" 
+          value={dateFilter} 
+          onChange={(e) => setDateFilter(e.target.value)}
+          style={{
+            padding: `6px ${t.spacing3}`,
+            borderRadius: t.radiusSm,
+            border: `1px solid ${t.colorNeutral300}`,
+            fontFamily: t.fontFamily,
+            fontSize: t.fontSizeSm,
+          }}
+        />
+        <button 
+          onClick={() => {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            setDateFilter(`${yyyy}-${mm}-${dd}`);
+          }}
+          style={{
+            padding: `6px ${t.spacing3}`,
+            borderRadius: t.radiusSm,
+            border: `1px solid ${t.colorBrand}`,
+            backgroundColor: t.colorBrandLight,
+            color: t.colorBrand,
+            fontSize: t.fontSizeSm,
+            fontWeight: t.fontWeightMedium,
+            cursor: 'pointer',
+          }}
+        >
+          Hari Ini
+        </button>
+        {dateFilter && (
+          <button 
+            onClick={() => setDateFilter('')}
+            style={{
+              padding: `6px ${t.spacing3}`,
+              borderRadius: t.radiusSm,
+              border: `1px solid ${t.colorNeutral300}`,
+              backgroundColor: t.colorWhite,
+              color: t.colorNeutral800,
+              fontSize: t.fontSizeSm,
+              cursor: 'pointer',
+            }}
+          >
+            Hapus
+          </button>
+        )}
       </div>
 
       {/* Filter Tabs */}
@@ -465,10 +531,10 @@ export function ScreenValidation({
   );
 }
 
-export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onSubmitIntent, taskPhotos, uploadingPhoto, onPhotoUpload }) {
+export function ScreenTaskExecution({ task, checklist, allChecked, onStatusChange, onSubmitIntent, taskPhotos, uploadingPhoto, onPhotoUpload, taskNotes, onNoteChange }) {
   const { t, s } = useTheme();
   const totalItems = task?.task?.length ?? 0;
-  const checkedCount = Object.values(checklist).filter(Boolean).length;
+  const checkedCount = Object.values(checklist).filter(v => v === 'met' || v === 'not_met').length;
   const progressPct = totalItems ? Math.round((checkedCount / totalItems) * 100) : 0;
 
   return (
@@ -515,12 +581,14 @@ export function ScreenTaskExecution({ task, checklist, allChecked, onToggle, onS
               key={index}
               index={index}
               taskName={item.task_name}
-              checked={checklist[index] ?? false}
-              onToggle={onToggle}
+              status={checklist[index] || ""}
+              onStatusChange={onStatusChange}
               isLast={index === task.task.length - 1}
               photo={taskPhotos?.[index]}
               uploading={uploadingPhoto?.[index]}
               onPhotoUpload={(file) => onPhotoUpload(index, file)}
+              note={taskNotes?.[index] || ''}
+              onNoteChange={(note) => onNoteChange(index, note)}
             />
           ))}
         </div>
