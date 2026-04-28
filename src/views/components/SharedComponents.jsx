@@ -33,14 +33,10 @@ export function ChecklistItem({ index, taskName, status, onStatusChange, isLast,
       style={{
         display: 'flex',
         flexDirection: 'column',
-        padding: `${t.spacing3} ${t.spacing5}`,
+        padding: `${t.spacing4} ${t.spacing5}`,
         borderBottom: isLast ? 'none' : `1px solid ${t.colorNeutral200}`,
-        backgroundColor: isFilled
-          ? t.colorSuccessLight
-          : hover
-          ? t.colorNeutral100
-          : t.colorWhite,
-        transition: 'background-color 0.1s ease',
+        backgroundColor: hover ? t.colorNeutral100 : t.colorWhite,
+        transition: 'background-color 0.15s ease',
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -48,36 +44,44 @@ export function ChecklistItem({ index, taskName, status, onStatusChange, isLast,
       <div 
         style={{ display: 'flex', alignItems: 'center', gap: t.spacing3, width: '100%' }}
       >
+        {/* Label */}
+        <span
+          style={{
+            fontSize: t.fontSizeBase,
+            color: t.colorNeutral900,
+            fontWeight: t.fontWeightMedium,
+            flex: 1,
+            lineHeight: t.lineHeightBase,
+          }}
+        >
+          {taskName}
+        </span>
+
+        {/* Dropdown */}
         <select
           value={status || ''}
           onChange={(e) => onStatusChange(index, e.target.value)}
           style={{
-            padding: `4px ${t.spacing2}`,
-            borderRadius: t.radiusSm,
-            border: `1px solid ${t.colorNeutral400}`,
+            padding: `6px ${t.spacing3}`,
+            borderRadius: t.radiusFull,
+            border: `1px solid ${status === 'met' ? t.colorSuccess : status === 'not_met' ? t.colorDanger : t.colorNeutral300}`,
+            backgroundColor: status === 'met' ? t.colorSuccessLight : status === 'not_met' ? '#fee2e2' : t.colorWhite,
+            color: status === 'met' ? t.colorSuccess : status === 'not_met' ? t.colorDanger : t.colorNeutral800,
             fontSize: t.fontSizeSm,
+            fontWeight: t.fontWeightMedium,
             fontFamily: t.fontFamily,
-            color: status ? t.colorNeutral1000 : t.colorNeutral500,
             cursor: 'pointer',
+            outline: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            appearance: 'none',
+            textAlign: 'center'
           }}
         >
-          <option value="" disabled>Pilih Status</option>
+          <option value="" disabled>Status</option>
           <option value="met">Met</option>
           <option value="not_met">Not Met</option>
         </select>
-      {/* Label */}
-      <span
-        style={{
-          fontSize: t.fontSizeBase,
-          color: isFilled ? t.colorSuccess : t.colorNeutral900,
-          fontWeight: isFilled ? t.fontWeightMedium : t.fontWeightRegular,
-          textDecoration: isFilled ? 'line-through' : 'none',
-          flex: 1,
-          lineHeight: t.lineHeightBase,
-        }}
-      >
-        {taskName}
-      </span>
 
       {/* Photo Capture */}
       <div
@@ -148,15 +152,19 @@ export function ChecklistItem({ index, taskName, status, onStatusChange, isLast,
             style={{
               width: '100%',
               minHeight: '60px',
-              padding: t.spacing2,
-              borderRadius: t.radiusSm,
+              padding: t.spacing3,
+              borderRadius: t.radiusMd,
               border: `1px solid ${t.colorNeutral300}`,
               fontSize: t.fontSizeSm,
               color: t.colorNeutral1000,
               resize: 'vertical',
               fontFamily: t.fontFamily,
+              outline: 'none',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
             }}
-            onClick={(e) => e.stopPropagation()} // Prevent toggling checklist when clicking input
+            onFocus={(e) => e.target.style.borderColor = t.colorBrand}
+            onBlur={(e) => e.target.style.borderColor = t.colorNeutral300}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       )}
