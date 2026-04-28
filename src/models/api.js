@@ -1,4 +1,4 @@
-const API_BASE = 'https://api-officeless-dev.mekari.com/28086';
+const API_BASE = import.meta.env.VITE_API_BASE || 'https://api-officeless-dev.mekari.com/28086';
 
 export const API_ENDPOINTS = {
   getAllTask: `${API_BASE}/get-all-task`,
@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   submitActivity: `${API_BASE}/getdataActivity`,
   getUsers: `${API_BASE}/get/user/gacoan`,
   getFace: `${API_BASE}/get-face`,
+  getUserTalenta: `${API_BASE}/get_user_talenta`,
 };
 
 export const fetchUsers = async () => {
@@ -45,6 +46,22 @@ export const fetchFaceData = async () => {
   const data = await res.json();
   return Array.isArray(data) ? data : [data];
 };
+
+export const fetchUserTalenta = async (email) => {
+  try {
+    const res = await fetch(API_ENDPOINTS.getUserTalenta);
+    if (!res.ok) return null;
+    const data = await res.json();
+    
+    if (Array.isArray(data) && email) {
+      return data.find(u => u.email?.toLowerCase() === email.toLowerCase()) || null;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
 
 export const fetchInitialAppData = async () => {
   const [tasks, locations, users, faces] = await Promise.all([

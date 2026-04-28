@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchUsers, fetchFaceData } from '../models/api';
+import { fetchUsers, fetchFaceData, fetchUserTalenta } from '../models/api';
 
 export function useAuthController() {
   const [users, setUsers] = useState([]);
@@ -27,8 +27,16 @@ export function useAuthController() {
     initAuthData();
   }, []);
 
-  const login = (user) => {
+  const login = async (user) => {
     setCurrentUser(user);
+    try {
+      const detail = await fetchUserTalenta(user.email);
+      if (detail) {
+        setCurrentUser(prev => ({ ...prev, ...detail }));
+      }
+    } catch (e) {
+      console.error('Failed to fetch talenta data:', e);
+    }
   };
 
   const logout = () => {

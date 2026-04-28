@@ -621,12 +621,30 @@ export function ScreenSettings({ faceRecognitionEnabled, onToggleFaceRecognition
 
 export function ScreenProfile({ currentUser }) {
   const { t, s } = useTheme();
-  const fields = [
+  
+  const baseFields = [
     { label: 'Nama Lengkap', value: currentUser?.name },
     { label: 'Email', value: currentUser?.email },
     { label: 'ID Karyawan', value: currentUser?.id },
     { label: 'Perusahaan', value: `ID: ${currentUser?.company_id || '-'}` },
   ];
+
+  const dynamicFields = [];
+  if (currentUser) {
+    const knownKeys = ['name', 'email', 'id', 'company_id'];
+    Object.keys(currentUser).forEach(key => {
+      if (!knownKeys.includes(key)) {
+        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        let value = currentUser[key];
+        if (typeof value === 'object' && value !== null) {
+          value = JSON.stringify(value);
+        }
+        dynamicFields.push({ label, value: String(value) });
+      }
+    });
+  }
+
+  const fields = [...baseFields, ...dynamicFields];
 
   return (
     <div>
