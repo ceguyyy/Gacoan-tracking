@@ -756,3 +756,5 @@ export function ScreenProfile({ currentUser }) {
     </div>
   );
 }
+
+export * from './ScreenActivityDashboard';

@@ -14,12 +14,14 @@ import {
   ScreenCompleted,
   ScreenSettings,
   ScreenProfile,
+  ScreenActivityDashboard,
 } from './views/screens';
 
 // ─── Screen/Route constants ───────────────────────────────────────────────────
 const SCREEN = {
   LOGIN: 'LOGIN',
   TASK_SELECT: 'TASK_SELECT',
+  ACTIVITY_DASHBOARD: 'ACTIVITY_DASHBOARD',
   SETTINGS: 'SETTINGS',
   PROFILE: 'PROFILE',
   VALIDATION_INITIAL: 'VALIDATION_INITIAL',
@@ -30,6 +32,7 @@ const SCREEN = {
 
 const NAV_SCREEN_MAP = {
   tasks: SCREEN.TASK_SELECT,
+  dashboard: SCREEN.ACTIVITY_DASHBOARD,
   settings: SCREEN.SETTINGS,
   profile: SCREEN.PROFILE,
 };
@@ -40,6 +43,7 @@ const SCREEN_NAV_MAP = {
   [SCREEN.TASK_EXECUTION]: 'tasks',
   [SCREEN.VALIDATION_FINAL]: 'tasks',
   [SCREEN.COMPLETED]: 'tasks',
+  [SCREEN.ACTIVITY_DASHBOARD]: 'dashboard',
   [SCREEN.SETTINGS]: 'settings',
   [SCREEN.PROFILE]: 'profile',
 };
@@ -50,6 +54,7 @@ const PAGE_TITLES = {
   [SCREEN.TASK_EXECUTION]: 'Kerjakan Tugas',
   [SCREEN.VALIDATION_FINAL]: 'Validasi Akhir',
   [SCREEN.COMPLETED]: 'Selesai',
+  [SCREEN.ACTIVITY_DASHBOARD]: 'Dashboard',
   [SCREEN.SETTINGS]: 'Pengaturan',
   [SCREEN.PROFILE]: 'Profil Saya',
 };
@@ -195,6 +200,10 @@ export default function TaskActivity() {
           onSelectTask={handleSelectTask}
           currentUser={authController.currentUser}
         />
+      )}
+
+      {screen === SCREEN.ACTIVITY_DASHBOARD && (
+        <ScreenActivityDashboard />
       )}
 
       {(screen === SCREEN.VALIDATION_INITIAL || screen === SCREEN.VALIDATION_FINAL) && (
